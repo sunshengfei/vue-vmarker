@@ -5,7 +5,7 @@
 1. 安装
 ---
 `
-npm install vue-ui-picture-bd-marker -S
+npm install vue-picture-bd-marker
 `
 
 
@@ -136,6 +136,9 @@ export default class MiaozhenMarker {
 |onDrawOne|当画完一个标注框时回调，参数为data【标注数据】, uniqueKey|----|
 |onSelect|当选中图片上的标注框时回调，参数为data【标注数据】, uniqueKey|----|
 |onUpdated|当标注框位置或者标框属性发生改动时回调，参数为data【标注数据】, uniqueKey|----|
-|onDataRendered|当标注框主动渲染数据后时回调，参数为data【标注数据】, uniqueKey|----|
+|onDataRendered|当标注框主动渲染数据后时回调，参数为uniqueKey|----|
 
 ----
+
+
+[github仓库地址](https://github.com/FRED5DON/vue-ui-picture-bd-marker)

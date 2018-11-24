@@ -117,7 +117,7 @@ export default {
     },
     //marker
     onDataRendered() {
-      this.$emit("onDataRendered", data,this.key);
+      this.$emit("onDataRendered",this.key);
     },
     onUpdated(data) {
       this.$emit("onUpdated", data, this.key);
