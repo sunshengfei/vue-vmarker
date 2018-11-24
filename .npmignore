@@ -1,0 +1,16 @@
+.DS_Store
+.*
+node_modules/
+dist/
+build/
+src/
+npm-debug.log
+yarn-error.log
+webpack.config.js
+
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
