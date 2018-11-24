@@ -7,6 +7,8 @@
 `
 npm install vue-ui-picture-bd-marker -S
 `
+
+
 2. 使用
 ---
 
@@ -43,9 +45,15 @@ export default {
 </script>
 
 ```
+
+
 PS: MiaozhenMarker是简单封装了ui-picture-bd-marker（简称bdmarker）的一个类，可以通过AIMarker获取MiaozhenMarker实例直接调用实现与bdmarker的交互；一方面也可以通过MiaozhenMarker `getMarker()`获取原生的bdmarker实例来进行操作；
 AIMarker内部就是直接使用了MiaozhenMarker来进行与bdmarker的交互的。
+
+
 **MiaozhenMarker源码一览**
+
+
 ```js
 'use strict'
 // made by freddon 2018年08月12日
