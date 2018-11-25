@@ -4,10 +4,9 @@
 
 1. 安装
 ---
-`
+```
 npm install vue-picture-bd-marker
-`
-
+```
 
 2. 使用
 ---

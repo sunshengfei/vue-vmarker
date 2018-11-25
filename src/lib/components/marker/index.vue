@@ -12,7 +12,7 @@
 <script>
 import MiaozhenMarker from "./js/marker";
 import "ui-picture-bd-marker/styles/bdmarker.scss";
-const empImg = require("../../../assets/white.png");
+const empImg = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==`;
 export default {
   name: "vue-aimarker",
   props: {
@@ -23,7 +23,7 @@ export default {
   },
   watch: {
     imgUrl: function(n, o) {
-      this.currentBaseImage = this.imgUrl;
+      this.currentBaseImage = n;
     },
     width: function(n, o) {
       this.__updateFrame();
@@ -60,7 +60,7 @@ export default {
       onDrawOne: self.onDrawOne,
       onSelect: self.onSelect
     };
-    if (this.imgUrl) {
+    if (/^.+$/.test(this.imgUrl)) {
       this.currentBaseImage = this.imgUrl;
     } else {
       this.currentBaseImage = this.emptyImg;
