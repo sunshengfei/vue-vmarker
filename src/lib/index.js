@@ -1,5 +1,5 @@
 import AIMarker from './components/marker/index.js'
-import MiaozhenMarker from "./components/marker/js/marker";
+import PictureMarker from "./components/marker/js/marker";
 
 const components = [
   AIMarker
@@ -19,5 +19,5 @@ if (typeof window !== 'undefined' && window.Vue) {
 export {
   install,
   AIMarker,
-  MiaozhenMarker
+  PictureMarker
 }

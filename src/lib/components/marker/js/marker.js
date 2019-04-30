@@ -5,7 +5,7 @@ import {
   positionP2S
 } from 'ui-picture-bd-marker'
 
-export default class MiaozhenMarker {
+export default class PictureMarker {
   constructor(parentEl, draftEl, configs) {
     this.marker = this._makeMarker(parentEl, draftEl, configs)
   }

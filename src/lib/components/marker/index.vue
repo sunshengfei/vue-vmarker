@@ -1,25 +1,25 @@
 <template>
-    <div class="aipanel" v-loading="loading" :class="rootClass">
-        <div class="g-image" style="position: relative; overflow: hidden;">
-      <img class="ai-raw-image" :src="currentBaseImage" @load="onImageLoad"
-        style="display: block; position: absolute; user-select: none; ">
-      <div class="annotate ai-raw-image-mask" style="user-select: none; position: absolute; cursor: crosshair; left: 0px; top: 0;">
+  <div class="vmr-ai-panel" :loading="loading" :class="rootClass">
+    <div class="vmr-g-image" style="position: relative; overflow: hidden;">
+      <img class="vmr-ai-raw-image" :src="currentBaseImage" @load="onImageLoad" style="display: block; position: absolute; user-select: none; ">
+      <div class="annotate vmr-ai-raw-image-mask" style="user-select: none; position: absolute; cursor: crosshair; left: 0px; top: 0;">
         <div class="draft" style="position: absolute;user-select: none;display: none;background-color: rgba(1,0,0,0.5);"></div>
       </div>
     </div>
-    </div>
+  </div>
 </template>
 <script>
-import MiaozhenMarker from "./js/marker";
+import PictureMarker from "./js/marker";
 import "ui-picture-bd-marker/styles/bdmarker.scss";
 const empImg = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==`;
 export default {
-  name: "vue-aimarker",
+  name: "vue-ai-marker",
   props: {
     readOnly: Boolean,
     imgUrl: String,
     uniqueKey: [String, Number],
-    width: [String, Number]
+    width: [String, Number],
+    ratio: Number
   },
   watch: {
     imgUrl: function(n, o) {
@@ -27,6 +27,21 @@ export default {
     },
     width: function(n, o) {
       this.__updateFrame();
+    },
+    readOnly: function(n, o) {
+      this.options.options = {
+        ...this.options.options,
+        editable: !n
+      };
+      if (this.marker) {
+        this.marker.updateConfig(this.options);
+      }
+    },
+    ratio: function(n, o) {
+      if (n) {
+        this.wratioh = n;
+        this.__updateFrame();
+      }
     }
   },
   data() {
@@ -36,6 +51,7 @@ export default {
       currentBaseImage: void 0,
       rootClass: "",
       key: "",
+      wratioh: 16 / 9,
       loading: true
     };
   },
@@ -44,7 +60,7 @@ export default {
     this.rootClass = this.uniqueKey ? `pannel-${this.uniqueKey}` : void 0;
   },
   mounted() {
-    this.__updateFrame()
+    this.__updateFrame();
   },
   created() {
     let self = this;
@@ -67,39 +83,48 @@ export default {
     }
     this.$nextTick(function() {
       self.__initMarker();
-      self.$emit("onReady", self.key);
+      self.$emit("vmarker:onReady", self.key);
     });
   },
   activated() {
     this.rootClass = `pannel-${this.key}`;
-    this.$emit("onReady", this.key);
+    this.$emit("vmarker:onReady", this.key);
   },
   methods: {
+    getMarker() {
+      return this.marker;
+    },
     __updateFrame() {
-      if (this.width) {
-        const width = this.width;
-        let root = document.querySelector(
-          `.aipanel${this.rootClass ? "." + this.rootClass : ""}`
-        );
-        root.style.width = parseInt(width) + "px";
-        root.style.height = parseInt(width) * 9 / 16 + 20 + "px";
-        root
-          .querySelectorAll(".g-image,.ai-raw-image,.ai-raw-image-mask")
-          .forEach(function(element) {
-            element.style.width = parseInt(width) + "px";
-            element.style.height = parseInt(width) * 9 / 16 + "px";
-          });
+      let root = this.$el;
+      if (!root) {
+        return;
       }
+
+      let width = this.width;
+      if (!this.width) {
+        width = "100%";
+      }
+      root.style.width = width.endsWith("%") ? width : parseInt(width) + "px";
+      root.style.height = root.clientWidth / this.wratioh + "px";
+      root
+        .querySelectorAll(
+          ".vmr-g-image,.vmr-ai-raw-image,.vmr-ai-raw-image-mask"
+        )
+        .forEach(element => {
+          element.style.width = root.style.width;
+          element.style.height =
+            parseInt(root.clientWidth) / this.wratioh + "px";
+        });
     },
     __initMarker() {
       let self = this;
-      self.marker = new MiaozhenMarker(
-        document.querySelector(
-          `.aipanel${this.rootClass ? "." + this.rootClass : ""} .annotate`
-        ), //box
-        document.querySelector(
-          `.aipanel${this.rootClass ? "." + this.rootClass : ""} .draft `
-        ), //draft
+      let root = this.$el;
+      if (!root) {
+        return;
+      }
+      self.marker = new PictureMarker(
+        root.querySelector(`.annotate`), //box
+        root.querySelector(`.draft `), //draft
         self.options
       );
     },
@@ -111,22 +136,23 @@ export default {
         currentH: e.target.offsetHeight
       };
       if (!this.currentBaseImage.startsWith("data")) {
-        this.$emit("onImageLoad", rawData, this.key);
+        this.$emit("vmarker:onImageLoad", rawData, this.key);
       }
       this.loading = false;
     },
     //marker
     onDataRendered() {
-      this.$emit("onDataRendered",this.key);
+      this.$emit("vmarker:onDataRendered", this.key);
     },
     onUpdated(data) {
-      this.$emit("onUpdated", data, this.key);
+      this.$emit("vmarker:onUpdated", data, this.key);
     },
     onDrawOne(data, currentMovement) {
-      this.$emit("onDrawOne", data, this.key);
+      this.$emit("vmarker:onDrawOne", data, this.key);
+      console.log(data);
     },
     onSelect(data) {
-      this.$emit("onSelect", data, this.key);
+      this.$emit("vmarker:onSelect", data, this.key);
     },
     dispatchEvent(event, data) {
       if (this.marker) {
@@ -138,6 +164,16 @@ export default {
         this.marker.renderData(data, wh);
       }
     },
+    clearData() {
+      if (this.marker) {
+        this.marker.clearData();
+      }
+    },
+    setTag(tag) {
+      if (this.marker) {
+        this.marker.setTag(tag);
+      }
+    },
     renderer(imageUrl) {
       this.currentBaseImage = this.imgUrl = imageUrl;
     }
@@ -146,19 +182,21 @@ export default {
 </script>
 <style lang="scss" scoped>
 $opImageWidth: 600px;
-.aipanel {
+$gulp: 10px;
+.vmr-ai-panel {
   background: #3e3e3e;
-  width: $opImageWidth;
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: round($opImageWidth * 9 / 16) + 20;
-  .g-image,
-  .ai-raw-image,
-  .ai-raw-image-mask {
-    width: $opImageWidth;
-    height: round($opImageWidth * 9 / 16);
+  height: auto; // $gulp * 2;
+  .vmr-g-image,
+  .vmr-ai-raw-image,
+  .vmr-ai-raw-image-mask {
+    // width: $opImageWidth;
+    // height: round($opImageWidth * 9 / 16);
+    width: 100%;
+    height: 100%;
   }
 }
 </style>
-
