@@ -3,16 +3,19 @@
       <AiPanel ref="aiPanel-editor"
        class="ai-observer" :ratio="ratio" v-bind:uniqueKey="1" @vmarker:onSelect="selectOne" @vmarker:onUpdated="onUpdated" @vmarker:onDrawOne="_drawOne"
               @vmarker:onReady="onAiPanelReady" @vmarker:onImageLoad="onImageLoad" v-bind:readOnly="false" v-bind:imgUrl="currentImage()"></AiPanel>
+
+              <div>"data:"{{tagList}}</div>
   </div>
 </template>
 
 <script>
-import { AIMarker as AiPanel } from "vue-picture-bd-marker";
+import { AIMarker as AiPanel } from "./lib/index.js";
 export default {
   name: "app",
   data() {
     return {
-      ratio: 1.3333,
+      ratio: 1,
+      tagList:[],
       photoWH: {
         sourceWH: {
           souW: 0,
@@ -35,16 +38,14 @@ export default {
     },
     onAiPanelReady() {},
     onImageLoad() {
-      this.ratio = 1.333333;
     }, // 松手触发
     onUpdated(data, m) {
-      console.log("🦁onUpdated🦁 data=", data);
+      // console.log("🦁onUpdated🦁 data=", data);
       this.tagList = data;
-      this.isDisabled = false;
     },
     // 单选触发
     selectOne(data, uKey) {
-      console.log("🤚selectOne data=", data);
+      // console.log("🤚selectOne data=", data);
     },
     // 单个标签方法
     _drawOne(data) {},
