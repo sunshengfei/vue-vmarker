@@ -10,6 +10,11 @@ github仓库地址：[https://github.com/FRED5DON/vue-ui-picture-bd-marker](http
 更新说明
 ---
 
+## v1.3.0
+
+1. 重新适配`ui-picture-bd-marker@2.0.0`
+2. 修复ratio默认不生效问题。（[issue#3](https://github.com/FRED5DON/ui-picture-bd-marker/issues/3) ）
+
 ## v1.2.1
 
 > 注意：不兼容1.0.x版本

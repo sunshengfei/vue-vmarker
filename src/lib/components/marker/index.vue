@@ -19,7 +19,10 @@ export default {
     imgUrl: String,
     uniqueKey: [String, Number],
     width: [String, Number],
-    ratio: Number
+    ratio: {
+      default: 16 / 9,
+      type: Number
+    }
   },
   watch: {
     imgUrl: function(n, o) {
@@ -51,7 +54,7 @@ export default {
       currentBaseImage: void 0,
       rootClass: "",
       key: "",
-      wratioh: 16 / 9,
+      wratioh: this.ratio,
       loading: true
     };
   },
@@ -149,7 +152,6 @@ export default {
     },
     onDrawOne(data, currentMovement) {
       this.$emit("vmarker:onDrawOne", data, this.key);
-      console.log(data);
     },
     onSelect(data) {
       this.$emit("vmarker:onSelect", data, this.key);
