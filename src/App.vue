@@ -1,10 +1,20 @@
 <template>
   <div id="app">
-      <AiPanel ref="aiPanel-editor"
-       class="ai-observer" :ratio="ratio" v-bind:uniqueKey="1" @vmarker:onSelect="selectOne" @vmarker:onUpdated="onUpdated" @vmarker:onDrawOne="_drawOne"
-              @vmarker:onReady="onAiPanelReady" @vmarker:onImageLoad="onImageLoad" v-bind:readOnly="false" v-bind:imgUrl="currentImage()"></AiPanel>
+    <AiPanel
+      ref="aiPanel-editor"
+      class="ai-observer"
+      :ratio="ratio"
+      v-bind:uniqueKey="1"
+      @vmarker:onSelect="selectOne"
+      @vmarker:onUpdated="onUpdated"
+      @vmarker:onDrawOne="_drawOne"
+      @vmarker:onReady="onAiPanelReady"
+      @vmarker:onImageLoad="onImageLoad"
+      v-bind:readOnly="false"
+      v-bind:imgUrl="currentImage()"
+    ></AiPanel>
 
-              <div>"data:"{{tagList}}</div>
+    <div>"data:"{{tagList}}</div>
   </div>
 </template>
 
@@ -15,7 +25,7 @@ export default {
   data() {
     return {
       ratio: 1,
-      tagList:[],
+      tagList: [],
       photoWH: {
         sourceWH: {
           souW: 0,
@@ -37,8 +47,7 @@ export default {
       return "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1139702265,431383255&fm=26&gp=0.jpg";
     },
     onAiPanelReady() {},
-    onImageLoad() {
-    }, // 松手触发
+    onImageLoad() {}, // 松手触发
     onUpdated(data, m) {
       // console.log("🦁onUpdated🦁 data=", data);
       this.tagList = data;
@@ -49,6 +58,11 @@ export default {
     },
     // 单个标签方法
     _drawOne(data) {},
+    _deleteAll() {
+      let mirror = this.$refs["aiPanel-editor"];
+      // mirror.dispatchEvent("setTag", tagStr);
+      mirror.getMarker().clearData();
+    },
     // 打标签
     _doTag(tagStr) {
       let mirror = this.$refs["aiPanel-editor"];
