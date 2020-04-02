@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { AIMarker as AiPanel } from "./lib/index.js";
+import { AIMarker as AiPanel } from "vue-picture-bd-marker";
 export default {
   name: "app",
   data() {
