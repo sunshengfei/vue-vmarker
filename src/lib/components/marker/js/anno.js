@@ -23,6 +23,7 @@
 'use strict';
 import {
     MOUSE_EVENT,
+    TOUCH_EVENT,
     dotCls,
     imageOpTag,
     PREFIX_RESIZE_DOT,
@@ -46,11 +47,14 @@ export default class ResizeAnnotation {
         this.currentMovement = null;
         this.rawConfig = { ...defaultConfig, ...callback };
         this.data = [];
-        if (this.rawConfig.supportDelKey) {
+        if (this.options.supportDelKey) {
+            let that = this
             document.onkeydown = function (e) {
                 if (e.keyCode === 8 || e.keyCode === 46) {
-                    let selectNode = e.target;
-                    this.removeAnnotation(selectNode);
+                    let currentMovement = that.currentMovement
+                    if (currentMovement) {
+                        that.removeAnnotation(currentMovement.moveNode);
+                    }
                 }
             };
         }
@@ -341,19 +345,25 @@ export default class ResizeAnnotation {
         // e.preventDefault();
         // e.stopPropagation();
         // if (!e.target.classList.contains('annotation') &&
-        //     !e.target.classList.contains(`${PREFIX_RESIZE_DOT}`)) {
+        // !e.target.classList.contains(`${PREFIX_RESIZE_DOT}`)) {
         //     eventTargetOnTransform = false;
         //   }
         const eventType = e.type;
+        // console.log(`eventType=${eventType}`);
         if (eventType === MOUSE_EVENT[6]) {
             this.selectAnnotation();
             return;
         }
         let clientX = e.clientX,
             clientY = e.clientY;
+        if (e.targetTouches && e.targetTouches.length > 0) {
+            let touch = e.targetTouches[0]
+            clientX = touch ? touch.clientX : undefined
+            clientY = touch ? touch.clientY : undefined
+        }
         this.moveX = clientX;//- this.boundRect().x;
         this.moveY = clientY;//- this.boundRect().y;
-        if (eventType === MOUSE_EVENT[0]) {
+        if (eventType === MOUSE_EVENT[0] || eventType === TOUCH_EVENT[0]) {
             this.actionDown = true;
             this.lastX = this.moveX;
             this.lastY = this.moveY;
@@ -363,7 +373,8 @@ export default class ResizeAnnotation {
             // eventTargetOnTransform = true;
             this.targetEventType(e);
         } else if (eventType === MOUSE_EVENT[1] || eventType === MOUSE_EVENT[3] || eventType ===
-            MOUSE_EVENT[5]) {
+            MOUSE_EVENT[5] || eventType === TOUCH_EVENT[1] || eventType === TOUCH_EVENT[3] || eventType === TOUCH_EVENT[5]
+        ) {
             if (this.currentMovement == null) {
                 return true;
             }

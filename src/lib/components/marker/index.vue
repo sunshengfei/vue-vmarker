@@ -1,9 +1,20 @@
 <template>
   <div class="vmr-ai-panel" :loading="loading" :class="rootClass">
     <div class="vmr-g-image" style="position: relative; overflow: hidden;">
-      <img class="vmr-ai-raw-image" :src="currentBaseImage" @load="onImageLoad" style="display: block; position: absolute; user-select: none; ">
-      <div class="annotate vmr-ai-raw-image-mask" style="user-select: none; position: absolute; cursor: crosshair; left: 0px; top: 0;">
-        <div class="draft" style="position: absolute;user-select: none;display: none;background-color: rgba(1,0,0,0.5);"></div>
+      <img
+        class="vmr-ai-raw-image"
+        :src="currentBaseImage"
+        @load="onImageLoad"
+        style="display: block; position: absolute; user-select: none; "
+      />
+      <div
+        class="annotate vmr-ai-raw-image-mask"
+        style="user-select: none; position: absolute; cursor: crosshair; left: 0px; top: 0;"
+      >
+        <div
+          class="draft"
+          style="position: absolute;user-select: none;display: none;background-color: rgba(1,0,0,0.5);"
+        ></div>
       </div>
     </div>
   </div>
@@ -102,7 +113,13 @@ export default {
       if (!root) {
         return;
       }
-
+      root.addEventListener(
+        "touchmove",
+        function(e) {
+          e.preventDefault();
+        },
+        { passive: false }
+      );
       let width = this.width;
       if (!this.width) {
         width = "100%";
@@ -183,7 +200,7 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss" >
 $opImageWidth: 600px;
 $gulp: 10px;
 .vmr-ai-panel {

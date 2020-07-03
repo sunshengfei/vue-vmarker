@@ -11,7 +11,7 @@
       @vmarker:onReady="onAiPanelReady"
       @vmarker:onImageLoad="onImageLoad"
       v-bind:readOnly="false"
-      v-bind:imgUrl="currentImage()"
+      v-bind:imgUrl="currentImage"
     ></AiPanel>
 
     <div>"data:"{{tagList}}</div>
@@ -19,13 +19,15 @@
 </template>
 
 <script>
-import { AIMarker as AiPanel } from "vue-picture-bd-marker";
+import { AIMarker as AiPanel } from "./lib/index";
 export default {
   name: "app",
   data() {
     return {
       ratio: 1,
       tagList: [],
+      currentImage:
+        "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1139702265,431383255&fm=26&gp=0.jpg",
       photoWH: {
         sourceWH: {
           souW: 0,
@@ -41,13 +43,41 @@ export default {
   components: { AiPanel },
   mounted() {
     window.thiz = this;
+    setTimeout(() => {
+      this.currentImage =
+        "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1835849131,3531773843&fm=26&gp=0.jpg";
+    }, 5000);
   },
   methods: {
-    currentImage() {
-      return "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1139702265,431383255&fm=26&gp=0.jpg";
+    onAiPanelReady() {
+      let mirror = this.$refs["aiPanel-editor"];
+      setTimeout(() => {
+        let data = [];
+        for (let index = 0; index < 100; index++) {
+          let rx = 1 * (Math.random() * 80).toFixed(2);
+          let rx1 = rx + 1 * (Math.random() * 20).toFixed(2);
+          let ry = 1 * (Math.random() * 80).toFixed(2);
+          let ry1 = rx + 1 * (Math.random() * 20).toFixed(2);
+          data.push({
+            tag: "id" + index,
+            tagName: "蜜蜂 " + index,
+            position: {
+              x: rx + "%",
+              x1: rx1 + "%",
+              y: ry + "%",
+              y1: ry1 + "%"
+            },
+            uuid: "5559A20B25712D9" + index
+          });
+        }
+        window.mirror = mirror;
+        window.dd = data;
+        mirror.renderData(data);
+      }, 5000);
     },
-    onAiPanelReady() {},
-    onImageLoad() {}, // 松手触发
+    onImageLoad(rawData, key) {
+      // console.log("onImageLoad", rawData, key);
+    }, // 松手触发
     onUpdated(data, m) {
       // console.log("🦁onUpdated🦁 data=", data);
       this.tagList = data;

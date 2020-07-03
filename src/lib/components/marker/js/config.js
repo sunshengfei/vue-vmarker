@@ -32,6 +32,15 @@ export const MOUSE_EVENT = [
     'contextmenu'
 ];
 
+export const TOUCH_EVENT = [
+    'touchstart',
+    'touchmove',
+    'touchend',
+    'touchcancel',
+    'touchup',
+    'touchleave'
+];
+
 export const defaultPositions = {
     bottom: 0x01,
     out_bottom: 0x02,
@@ -39,6 +48,7 @@ export const defaultPositions = {
 
 export const defaultConfig = {
     options: {
+        deviceType: 'both',//both | mouse | touch
         blurOtherDots: false,
         blurOtherDotsShowTags: false,
         editable: true,

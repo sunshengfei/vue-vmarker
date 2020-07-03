@@ -24,6 +24,7 @@
 
 import {
   MOUSE_EVENT,
+  TOUCH_EVENT,
   PREFIX_RESIZE_DOT,
   defaultConfig,
   UUID, positionP2S, transformDataArray
@@ -51,13 +52,27 @@ class BdAIMarker {
       this.resizeAnnotation = resizeAnnotation ? resizeAnnotation : new ResizeAnnotation(
         draft.parentNode, this.boundRect, configs, this.$callback_handler);
       let self = this;
-      MOUSE_EVENT.forEach((currentValue, index, arr) => {
-        layer.addEventListener(currentValue, (e) => {
-          let x = e.clientX,
-            y = e.clientY;
-          self.mouseEventHandler(e, x, y);
-        }, true);
-      });
+      if (this.options.deviceType == 'both' || this.options.deviceType == 'mouse') {
+        MOUSE_EVENT.forEach((currentValue, index, arr) => {
+          layer.addEventListener(currentValue, (e) => {
+            let x = e.clientX,
+              y = e.clientY;
+            self.mouseEventHandler(e, x, y);
+          }, true);
+        });
+      }
+      if (this.options.deviceType == 'both' || this.options.deviceType == 'touch') {
+        TOUCH_EVENT.forEach((currentValue, index, arr) => {
+          layer.addEventListener(currentValue, (e) => {
+            if (e.targetTouches) {
+              let touch = e.targetTouches[0]
+              let x = touch ? touch.clientX : undefined,
+                y = touch ? touch.clientY : undefined;
+              self.mouseEventHandler(e, x, y);
+            }
+          }, true);
+        });
+      }
     }
   }
 
@@ -77,8 +92,12 @@ class BdAIMarker {
     // e.stopPropagation();
     let eventType = e.type;
     let boundRect = this.boundRect();
-    this.moveX = clientX - boundRect.x;
-    this.moveY = clientY - boundRect.y;
+    if (clientX) {
+      this.moveX = clientX - boundRect.x;
+    }
+    if (clientY) {
+      this.moveY = clientY - boundRect.y;
+    }
     if (eventType === MOUSE_EVENT[6]) {
       this.eventTargetOnTransform = false;
       this.actionDown = false;
@@ -89,7 +108,7 @@ class BdAIMarker {
       this.resizeAnnotation.dragEventOn(e);
       return;
     }
-    if (eventType === MOUSE_EVENT[0]) {
+    if (eventType === MOUSE_EVENT[0] || eventType === TOUCH_EVENT[0]) {
       if (e.target.classList.contains(this.options.annotationClass) ||
         e.target.classList.contains(`${PREFIX_RESIZE_DOT}`)) {
         this.eventTargetOnTransform = true;
@@ -100,16 +119,17 @@ class BdAIMarker {
         this.dragTo(this.moveX, this.moveY);
         return;
       }
+      this.resizeAnnotation.removeSelectedAnnotation()
       this.actionDown = true;
       this.anchorX = this.moveX;
       this.anchorY = this.moveY;
       this.resetDraft();
       this.anchorAt(this.anchorX, this.anchorY);
-    } else if (eventType === MOUSE_EVENT[1]) {
+    } else if (eventType === MOUSE_EVENT[1] || eventType === TOUCH_EVENT[1]) {
       if (this.actionDown) {
         this.dragTo(this.moveX, this.moveY);
       }
-    } else if (eventType === MOUSE_EVENT[4]) {
+    } else if (eventType === MOUSE_EVENT[4] || eventType === TOUCH_EVENT[2] || eventType === TOUCH_EVENT[4]) {
       if (this.actionDown && this.resizeAnnotation) {
         this.resizeAnnotation.drawAnnotation(this.draftRect);
         this.resetDraft();
@@ -126,6 +146,7 @@ class BdAIMarker {
         this.actionDown = false;
       }
     }
+    // console.log(`eventType=${eventType}`);
   };
 
 
