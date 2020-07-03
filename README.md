@@ -10,6 +10,11 @@ github仓库地址：[https://github.com/FRED5DON/vue-ui-picture-bd-marker](http
 更新说明
 ---
 
+## v1.3.5
+
+1. 增加Mobile支持
+2. 修复键盘删除键失效问题
+
 ## v1.3.0
 
 1. 重新适配`ui-picture-bd-marker@2.0.0`
