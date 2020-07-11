@@ -105,14 +105,14 @@ export default {
       onAnnoDataFullLoaded: function() {
         // console.log("🦁onAnnoDataFullLoaded🦁 data=", self.key);
         self.$emit("vmarker:onAnnoDataFullLoaded", self.key);
-        self.$emit("vmarker:onDataRendered", this.key);
       },
       onAnnoSelected: function(value, element) {
         // console.log("🦁onAnnoSelected🦁 data=", value);
         self.$emit("vmarker:onAnnoSelected", value, element, self.key);
-        self.$emit("vmarker:onSelect", value, this.key);
       },
-      onUpdated: self.onUpdated
+      onUpdated: function(data) {
+        self.$emit("vmarker:onUpdated", data, this.key);
+      }
     };
     if (/^.+$/.test(this.imgUrl)) {
       this.currentBaseImage = this.imgUrl;
@@ -185,10 +185,6 @@ export default {
       this.loading = false;
     },
     //marker
-
-    onUpdated(data) {
-      this.$emit("vmarker:onUpdated", data, this.key);
-    },
     dispatchEvent(event, data) {
       if (this.marker) {
         return this.marker[event](data);

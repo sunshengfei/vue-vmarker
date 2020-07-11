@@ -158,7 +158,6 @@ export default class ResizeAnnotation {
         } else {
             this.reset();
         }
-        this.rawConfig.onDataRendered();
         this.rawConfig.onAnnoDataFullLoaded();
     };
 
@@ -385,9 +384,8 @@ export default class ResizeAnnotation {
             parseFloat(rect.y) + parseFloat(rect.height) + '%')
         let insertItem = { ...dts, uuid: uu };
         this.data.push(insertItem);
-        this.rawConfig.onUpdated(this.dataSource());
         this.rawConfig.onAnnoAdded(insertItem, annotation);
-        this.rawConfig.onDrawOne(dts, this.currentMovement)
+        this.rawConfig.onUpdated(this.dataSource());
     };
 
     dragEventOn = (e) => {
@@ -491,7 +489,6 @@ export default class ResizeAnnotation {
                 ...this.dataSourceOfTag(tagAttr.id, node.dataset.uuid),
             }
             this.rawConfig.onAnnoSelected(selectData, node)
-            this.rawConfig.onSelect(selectData)
         }
     };
 

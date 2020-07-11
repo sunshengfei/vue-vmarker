@@ -53,7 +53,7 @@ export const defaultConfig = {
         blurOtherDotsShowTags: false,
         editable: true,
         showTags: true,
-        supportDelKey: true,
+        supportDelKey: false,
         tagLocation: defaultPositions.bottom,
         trashPositionStart: 0,
         boundReachPercent: 0.01,
@@ -66,10 +66,6 @@ export const defaultConfig = {
     onAnnoDataFullLoaded: function () { },
     onAnnoSelected: function (value, element) { },
     onUpdated: function () { },
-    //==== old 
-    onDataRendered: function () { },
-    onDrawOne: function () { },
-    onSelect: function () { },
 };
 
 export const imageOpTag = 'g-image-op-name'

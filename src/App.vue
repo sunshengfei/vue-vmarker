@@ -5,9 +5,9 @@
       class="ai-observer"
       :ratio="ratio"
       v-bind:uniqueKey="1"
-      @vmarker:onSelect="selectOne"
+      @vmarker:onAnnoSelected="onAnnoSelected"
+      @vmarker:onAnnoAdded="onAnnoAdded"
       @vmarker:onUpdated="onUpdated"
-      @vmarker:onDrawOne="_drawOne"
       @vmarker:onReady="onAiPanelReady"
       @vmarker:onImageLoad="onImageLoad"
       v-bind:readOnly="false"
@@ -85,20 +85,18 @@ export default {
       this.tagList = data;
     },
     // 单选触发
-    selectOne(data, uKey) {
+    onAnnoSelected(value, element, uKey) {
       // console.log("🤚selectOne data=", data);
     },
     // 单个标签方法
-    _drawOne(data) {},
+    onAnnoAdded(insertItem, uKey) {},
     _deleteAll() {
       let mirror = this.$refs["aiPanel-editor"];
-      // mirror.dispatchEvent("setTag", tagStr);
       mirror.getMarker().clearData();
     },
     // 打标签
     _doTag(tagStr) {
       let mirror = this.$refs["aiPanel-editor"];
-      // mirror.dispatchEvent("setTag", tagStr);
       mirror.getMarker().setTag({
         tagName: "小蜜蜂",
         tag: "0x0001"
