@@ -1,5 +1,10 @@
 # vue-picture-bd-marker
 
+效果图：
+
+![](https://sagocloud.com/ibucket/vm_sample.jpg)
+
+
 > 关于[ui-picture-bd-marker](https://www.npmjs.com/package/ui-picture-bd-marker)插件的Vue组件封装
  
 github仓库地址：[https://github.com/FRED5DON/vue-ui-picture-bd-marker](https://github.com/FRED5DON/vue-ui-picture-bd-marker)
@@ -9,6 +14,91 @@ github仓库地址：[https://github.com/FRED5DON/vue-ui-picture-bd-marker](http
 
 更新说明
 ---
+
+## v1.3.6
+
+删除@vmarker:onSelect、@vmarker:onDrawOne事件
+
+```
+<AiPanel
+      ref="aiPanel-editor"
+      class="ai-observer"
+      :ratio="ratio"
+      v-bind:uniqueKey="1"
+      @vmarker:onAnnoSelected="onAnnoSelected"
+      @vmarker:onAnnoAdded="onAnnoAdded"
+      @vmarker:onUpdated="onUpdated"
+      @vmarker:onReady="onAiPanelReady"
+      @vmarker:onImageLoad="onImageLoad"
+      v-bind:readOnly="false"
+      v-bind:imgUrl="currentImage"
+    />
+```
+通过this.$refs["aiPanel-editor"].getMarker().updateConfig(config)更新配置，内部config默认如下
+
+```
+config = {
+      options: {
+        blurOtherDots: true,
+        blurOtherDotsShowTags: true,
+        editable: this.readOnly ? false : true,
+        trashPositionStart: 1
+      },
+      onAnnoContextMenu: function(annoData, element, annoContext) {
+        // console.log("🦁onAnnoContextMenu🦁 data=", annoData);
+        self.$emit("vmarker:onAnnoContextMenu", annoData, element, self.key);
+      },
+      onAnnoRemoved: function(annoData) {
+        // console.log("🦁onAnnoRemoved🦁 data=", annoData);
+        self.$emit("vmarker:onAnnoRemoved", self.key);
+        return true;
+      },
+      onAnnoAdded: function(insertItem, element) {
+        // console.log("🦁onAnnoAdded🦁 data=", insertItem);
+        self.$emit("vmarker:onAnnoAdded", insertItem, self.key);
+      },
+      onAnnoChanged: function(newValue, oldValue) {
+        // console.log("🦁onAnnoChanged🦁 ", newValue, oldValue);
+        self.$emit("vmarker:onAnnoChanged", newValue, oldValue, self.key);
+      },
+      onAnnoDataFullLoaded: function() {
+        // console.log("🦁onAnnoDataFullLoaded🦁 data=", self.key);
+        self.$emit("vmarker:onAnnoDataFullLoaded", self.key);
+      },
+      onAnnoSelected: function(value, element) {
+        // console.log("🦁onAnnoSelected🦁 data=", value);
+        self.$emit("vmarker:onAnnoSelected", value, element, self.key);
+      },
+      onUpdated: function(data) {
+        self.$emit("vmarker:onUpdated", data, this.key);
+      }
+    };
+```
+
+内部可配置defaultConfig如下：
+```
+const defaultConfig = {
+    options: {
+        deviceType: 'both',//both | mouse | touch
+        blurOtherDots: false,
+        blurOtherDotsShowTags: false,
+        editable: true,
+        showTags: true,
+        supportDelKey: false,
+        tagLocation: defaultPositions.bottom,
+        trashPositionStart: 0,
+        boundReachPercent: 0.01,
+        annotationClass: 'annotation',
+    },
+    onAnnoContextMenu: function (annoData, element, annoContext) { },
+    onAnnoRemoved: function (annoData, element) { return true },
+    onAnnoAdded: function (insertItem, element) { },
+    onAnnoChanged: function (newValue, oldValue) { },
+    onAnnoDataFullLoaded: function () { },
+    onAnnoSelected: function (value, element) { },
+    onUpdated: function () { },
+};
+```
 
 ## v1.3.5
 

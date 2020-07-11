@@ -1,9 +1,20 @@
 <template>
   <div class="vmr-ai-panel" :loading="loading" :class="rootClass">
     <div class="vmr-g-image" style="position: relative; overflow: hidden;">
-      <img class="vmr-ai-raw-image" :src="currentBaseImage" @load="onImageLoad" style="display: block; position: absolute; user-select: none; ">
-      <div class="annotate vmr-ai-raw-image-mask" style="user-select: none; position: absolute; cursor: crosshair; left: 0px; top: 0;">
-        <div class="draft" style="position: absolute;user-select: none;display: none;background-color: rgba(1,0,0,0.5);"></div>
+      <img
+        class="vmr-ai-raw-image"
+        :src="currentBaseImage"
+        @load="onImageLoad"
+        style="display: block; position: absolute; user-select: none; "
+      />
+      <div
+        class="annotate vmr-ai-raw-image-mask"
+        style="user-select: none; position: absolute; cursor: crosshair; left: 0px; top: 0;"
+      >
+        <div
+          class="draft"
+          style="position: absolute;user-select: none;display: none;background-color: rgba(1,0,0,0.5);"
+        ></div>
       </div>
     </div>
   </div>
@@ -74,10 +85,34 @@ export default {
         editable: this.readOnly ? false : true,
         trashPositionStart: 1
       },
-      onDataRendered: self.onDataRendered,
-      onUpdated: self.onUpdated,
-      onDrawOne: self.onDrawOne,
-      onSelect: self.onSelect
+      onAnnoContextMenu: function(annoData, element, annoContext) {
+        // console.log("🦁onAnnoContextMenu🦁 data=", annoData);
+        self.$emit("vmarker:onAnnoContextMenu", annoData, element, self.key);
+      },
+      onAnnoRemoved: function(annoData) {
+        // console.log("🦁onAnnoRemoved🦁 data=", annoData);
+        self.$emit("vmarker:onAnnoRemoved", self.key);
+        return true;
+      },
+      onAnnoAdded: function(insertItem, element) {
+        // console.log("🦁onAnnoAdded🦁 data=", insertItem);
+        self.$emit("vmarker:onAnnoAdded", insertItem, self.key);
+      },
+      onAnnoChanged: function(newValue, oldValue) {
+        // console.log("🦁onAnnoChanged🦁 ", newValue, oldValue);
+        self.$emit("vmarker:onAnnoChanged", newValue, oldValue, self.key);
+      },
+      onAnnoDataFullLoaded: function() {
+        // console.log("🦁onAnnoDataFullLoaded🦁 data=", self.key);
+        self.$emit("vmarker:onAnnoDataFullLoaded", self.key);
+      },
+      onAnnoSelected: function(value, element) {
+        // console.log("🦁onAnnoSelected🦁 data=", value);
+        self.$emit("vmarker:onAnnoSelected", value, element, self.key);
+      },
+      onUpdated: function(data) {
+        self.$emit("vmarker:onUpdated", data, this.key);
+      }
     };
     if (/^.+$/.test(this.imgUrl)) {
       this.currentBaseImage = this.imgUrl;
@@ -144,18 +179,6 @@ export default {
       this.loading = false;
     },
     //marker
-    onDataRendered() {
-      this.$emit("vmarker:onDataRendered", this.key);
-    },
-    onUpdated(data) {
-      this.$emit("vmarker:onUpdated", data, this.key);
-    },
-    onDrawOne(data, currentMovement) {
-      this.$emit("vmarker:onDrawOne", data, this.key);
-    },
-    onSelect(data) {
-      this.$emit("vmarker:onSelect", data, this.key);
-    },
     dispatchEvent(event, data) {
       if (this.marker) {
         return this.marker[event](data);
