@@ -73,6 +73,7 @@ export const defaultConfig = {
 };
 
 export const imageOpTag = 'g-image-op-name'
+export const imageOpContent = 'g-image-op-content'
 
 export const PREFIX_RESIZE_DOT = 'resize-dot';
 

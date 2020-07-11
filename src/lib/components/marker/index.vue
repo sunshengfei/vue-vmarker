@@ -85,10 +85,34 @@ export default {
         editable: this.readOnly ? false : true,
         trashPositionStart: 1
       },
-      onDataRendered: self.onDataRendered,
-      onUpdated: self.onUpdated,
-      onDrawOne: self.onDrawOne,
-      onSelect: self.onSelect
+      onAnnoContextMenu: function(annoData, element, annoContext) {
+        // console.log("🦁onAnnoContextMenu🦁 data=", annoData);
+        self.$emit("vmarker:onAnnoContextMenu", annoData, element, self.key);
+      },
+      onAnnoRemoved: function(annoData) {
+        // console.log("🦁onAnnoRemoved🦁 data=", annoData);
+        self.$emit("vmarker:onAnnoRemoved", self.key);
+        return true;
+      },
+      onAnnoAdded: function(insertItem, element) {
+        // console.log("🦁onAnnoAdded🦁 data=", insertItem);
+        self.$emit("vmarker:onAnnoAdded", insertItem, self.key);
+      },
+      onAnnoChanged: function(newValue, oldValue) {
+        // console.log("🦁onAnnoChanged🦁 ", newValue, oldValue);
+        self.$emit("vmarker:onAnnoChanged", newValue, oldValue, self.key);
+      },
+      onAnnoDataFullLoaded: function() {
+        // console.log("🦁onAnnoDataFullLoaded🦁 data=", self.key);
+        self.$emit("vmarker:onAnnoDataFullLoaded", self.key);
+        self.$emit("vmarker:onDataRendered", this.key);
+      },
+      onAnnoSelected: function(value, element) {
+        // console.log("🦁onAnnoSelected🦁 data=", value);
+        self.$emit("vmarker:onAnnoSelected", value, element, self.key);
+        self.$emit("vmarker:onSelect", value, this.key);
+      },
+      onUpdated: self.onUpdated
     };
     if (/^.+$/.test(this.imgUrl)) {
       this.currentBaseImage = this.imgUrl;
@@ -161,18 +185,9 @@ export default {
       this.loading = false;
     },
     //marker
-    onDataRendered() {
-      this.$emit("vmarker:onDataRendered", this.key);
-    },
+
     onUpdated(data) {
       this.$emit("vmarker:onUpdated", data, this.key);
-    },
-    onDrawOne(data, currentMovement) {
-      this.$emit("vmarker:onDrawOne", data, this.key);
-      // console.log(data);
-    },
-    onSelect(data) {
-      this.$emit("vmarker:onSelect", data, this.key);
     },
     dispatchEvent(event, data) {
       if (this.marker) {

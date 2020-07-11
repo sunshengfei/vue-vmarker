@@ -51,35 +51,37 @@ export default {
   methods: {
     onAiPanelReady() {
       let mirror = this.$refs["aiPanel-editor"];
-      setTimeout(() => {
-        let data = [];
-        for (let index = 0; index < 100; index++) {
-          let rx = 1 * (Math.random() * 80).toFixed(2);
-          let rx1 = rx + 1 * (Math.random() * 20).toFixed(2);
-          let ry = 1 * (Math.random() * 80).toFixed(2);
-          let ry1 = rx + 1 * (Math.random() * 20).toFixed(2);
-          data.push({
-            tag: "id" + index,
-            tagName: "蜜蜂 " + index,
-            position: {
-              x: rx + "%",
-              x1: rx1 + "%",
-              y: ry + "%",
-              y1: ry1 + "%"
-            },
-            uuid: "5559A20B25712D9" + index
-          });
-        }
-        window.mirror = mirror;
-        window.dd = data;
-        mirror.renderData(data);
-      }, 5000);
+      // mirror.getMarker().updateConfig(
+      //   );
+      // setTimeout(() => {
+      //   let data = [];
+      //   for (let index = 0; index < 100; index++) {
+      //     let rx = 1 * (Math.random() * 80).toFixed(2);
+      //     let rx1 = rx + 1 * (Math.random() * 20).toFixed(2);
+      //     let ry = 1 * (Math.random() * 80).toFixed(2);
+      //     let ry1 = rx + 1 * (Math.random() * 20).toFixed(2);
+      //     data.push({
+      //       tag: "id" + index,
+      //       tagName: "蜜蜂 " + index,
+      //       position: {
+      //         x: rx + "%",
+      //         x1: rx1 + "%",
+      //         y: ry + "%",
+      //         y1: ry1 + "%"
+      //       },
+      //       uuid: "5559A20B25712D9" + index
+      //     });
+      //   }
+      //   window.mirror = mirror;
+      //   window.dd = data;
+      //   mirror.renderData(data);
+      // }, 5000);
     },
     onImageLoad(rawData, key) {
-      // console.log("onImageLoad", rawData, key);
+      console.log("onImageLoad", rawData, key);
     }, // 松手触发
     onUpdated(data, m) {
-      // console.log("🦁onUpdated🦁 data=", data);
+      console.log("🦁onUpdated🦁 data=", data);
       this.tagList = data;
     },
     // 单选触发

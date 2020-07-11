@@ -26,6 +26,7 @@ import {
     TOUCH_EVENT,
     dotCls,
     imageOpTag,
+    imageOpContent,
     PREFIX_RESIZE_DOT,
     defaultPositions,
     defaultConfig,
@@ -38,31 +39,72 @@ export default class ResizeAnnotation {
     constructor(parentNode, boundRect, callback = defaultConfig, callback_handler) {
         this.options = {
             ...defaultConfig.options,
-            ...callback.options
         };
+        this.rawConfig = { ...defaultConfig };
         this.callback_handler = callback_handler;
         this.annotationContainer = parentNode;
         this.boundRect = boundRect;
         this.actionDown = false;
         this.currentMovement = null;
-        this.rawConfig = { ...defaultConfig, ...callback };
         this.data = [];
-        if (this.options.supportDelKey) {
-            let that = this
-            document.onkeydown = function (e) {
-                if (e.keyCode === 8 || e.keyCode === 46) {
-                    let currentMovement = that.currentMovement
-                    if (currentMovement) {
-                        that.removeAnnotation(currentMovement.moveNode);
-                    }
+        let that = this
+        this.delEvent = function (e) {
+            if (e.keyCode === 8 || e.keyCode === 46) {
+                let currentMovement = that.currentMovement
+                if (currentMovement) {
+                    that.removeAnnotation(currentMovement.moveNode);
                 }
-            };
+            }
+        }
+        this.setConfigOptions(callback)
+    }
+
+    _event = () => {
+        if (this.options.supportDelKey) {
+            document.addEventListener("keydown", this.delEvent)
+        } else {
+            document.removeEventListener("keydown", this.delEvent)
         }
     }
 
+    _uiconstruct = () => {
+        if (this.annotationContainer) {
+            let imageOpContents = this.annotationContainer.querySelectorAll(`.${imageOpContent}`)
+            for (let index = 0; index < imageOpContents.length; index++) {
+                const opContent = imageOpContents[index];
+                if (!this.options.showTags) {
+                    opContent.style.visibility = 'collapse';
+                } else {
+                    opContent.style.visibility = 'visible';
+                }
+                if (this.options.tagLocation == defaultPositions.out_bottom) {
+                    opContent.style.position = 'absolute';
+                    opContent.style.bottom = null;
+                } else {
+                    opContent.style.position = null;
+                }
+            }
+        }
+        //
+        if (this.currentMovement && !this.options.editable) {
+            this.currentMovement.moveNode.querySelectorAll(`[class*=${PREFIX_RESIZE_DOT}]`)
+                .forEach((node) => {
+
+                    if (node.classList.contains(dotCls[8])) {
+                        node.classList.remove('hidden');
+                    } else {
+                        node.classList.add('hidden');
+                    }
+                });
+        }
+
+    }
+
     setConfigOptions = (newOptions) => {
-        this.options = { ...this.options, ...newOptions.options };
-        this.rawConfig = { ...this.rawConfig, ...newOptions };
+        this.options = { ...this.options, ...newOptions.options }
+        this.rawConfig = { ...this.rawConfig, ...newOptions }
+        this._event()
+        this._uiconstruct()
     }
 
     //获取数据模板
@@ -188,16 +230,23 @@ export default class ResizeAnnotation {
             y1: (parseFloat(node.style.height) + parseFloat(node.style.top)).toFixed(3) + '%',
         };
         //从原有的数据集查找该tag
+        let changed = false
         for (let i = 0; i < this.data.length; i++) {
             let value = this.data[i];
             let oldValue = Object.assign({}, value);
             if (value.tag === tag && value.uuid === uuid) {
-                value.position = position;
+                if (JSON.stringify(value.position) != JSON.stringify(position)) {
+                    value.position = position;
+                    this.data[i] = value;
+                    changed = true
+                    this.rawConfig.onAnnoChanged(value, oldValue);
+                }
+                break
             }
-            this.data[i] = value;
-            this.rawConfig.onAnnoChanged(value, oldValue);
         }
-        this.rawConfig.onUpdated(this.dataSource(), this.currentMovement);
+        if (changed) {
+            this.rawConfig.onUpdated(this.dataSource(), this.currentMovement);
+        }
     };
 
     _removeAnnotationEvent = (e) => {
@@ -279,7 +328,7 @@ export default class ResizeAnnotation {
                     ? ''
                     : `${dotCls[i]}`} ${resizeDotClasses[prop]}`;
                 let opContent = document.createElement('div');
-                opContent.className = 'g-image-op-content';
+                opContent.className = imageOpContent;
                 if (!this.options.showTags) {
                     opContent.style.visibility = 'collapse';
                 } else {
