@@ -34,7 +34,7 @@ github仓库地址：[https://github.com/FRED5DON/vue-ui-picture-bd-marker](http
       v-bind:imgUrl="currentImage"
     />
 ```
-通过this.$refs["aiPanel-editor"].getMarker().updateConfig(config)更新配置，内部config默认如下
+可以通过this.$refs["aiPanel-editor"].getMarker().updateConfig(config)更新配置，vue-marker内部config默认如下
 
 ```
 config = {
@@ -85,7 +85,7 @@ const defaultConfig = {
         editable: true,
         showTags: true,
         supportDelKey: false,
-        tagLocation: defaultPositions.bottom,
+        tagLocation: defaultPositions.bottom,//1 2
         trashPositionStart: 0,
         boundReachPercent: 0.01,
         annotationClass: 'annotation',
