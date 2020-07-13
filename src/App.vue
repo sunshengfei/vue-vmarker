@@ -6,6 +6,7 @@
       :ratio="ratio"
       v-bind:uniqueKey="1"
       @vmarker:onAnnoSelected="onAnnoSelected"
+      @vmarker:onAnnoRemoved="onAnnoRemoved"
       @vmarker:onAnnoAdded="onAnnoAdded"
       @vmarker:onUpdated="onUpdated"
       @vmarker:onReady="onAiPanelReady"
@@ -19,7 +20,7 @@
 </template>
 
 <script>
-import { AIMarker as AiPanel } from "./lib/index";//vue-picture-bd-marker
+import { AIMarker as AiPanel } from "./lib/index"; //vue-picture-bd-marker
 export default {
   name: "app",
   data() {
@@ -87,6 +88,9 @@ export default {
     // 单选触发
     onAnnoSelected(value, element, uKey) {
       // console.log("🤚selectOne data=", data);
+    },
+    onAnnoRemoved(value, uKey) {
+      console.log("onAnnoRemoved data=", value, uKey);
     },
     // 单个标签方法
     onAnnoAdded(insertItem, uKey) {},

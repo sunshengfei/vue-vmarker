@@ -91,7 +91,7 @@ export default {
       },
       onAnnoRemoved: function(annoData) {
         // console.log("🦁onAnnoRemoved🦁 data=", annoData);
-        self.$emit("vmarker:onAnnoRemoved", self.key);
+        self.$emit("vmarker:onAnnoRemoved", annoData, self.key);
         return true;
       },
       onAnnoAdded: function(insertItem, element) {
