@@ -7,7 +7,7 @@
 
 > 关于[ui-picture-bd-marker](https://www.npmjs.com/package/ui-picture-bd-marker)插件的Vue组件封装
  
-github仓库地址：[https://github.com/FRED5DON/vue-ui-picture-bd-marker](https://github.com/FRED5DON/vue-ui-picture-bd-marker)
+github仓库地址：[https://github.com/sunshengfei/vue-ui-picture-bd-marker](https://github.com/sunshengfei/vue-ui-picture-bd-marker)
 
 文档地址：[https://vmarker.sagocloud.com/](https://vmarker.sagocloud.com/about/)
 
@@ -15,7 +15,7 @@ github仓库地址：[https://github.com/FRED5DON/vue-ui-picture-bd-marker](http
 更新说明
 ---
 
-## v1.3.6
+## v1.3.7
 
 删除@vmarker:onSelect、@vmarker:onDrawOne事件
 
@@ -50,7 +50,7 @@ config = {
       },
       onAnnoRemoved: function(annoData) {
         // console.log("🦁onAnnoRemoved🦁 data=", annoData);
-        self.$emit("vmarker:onAnnoRemoved", self.key);
+        self.$emit("vmarker:onAnnoRemoved", annoData, self.key);
         return true;
       },
       onAnnoAdded: function(insertItem, element) {
@@ -108,7 +108,7 @@ const defaultConfig = {
 ## v1.3.0
 
 1. 重新适配`ui-picture-bd-marker@2.0.0`
-2. 修复ratio默认不生效问题。（[issue#3](https://github.com/FRED5DON/ui-picture-bd-marker/issues/3) ）
+2. 修复ratio默认不生效问题。（[issue#3](https://github.com/sunshengfei/ui-picture-bd-marker/issues/3) ）
 
 ## v1.2.1
 
