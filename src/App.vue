@@ -14,8 +14,7 @@
       v-bind:readOnly="false"
       v-bind:imgUrl="currentImage"
     ></AiPanel>
-
-    <div>"data:"{{tagList}}</div>
+    <div>"data : "{{tagList}}</div>
   </div>
 </template>
 
@@ -28,7 +27,7 @@ export default {
       ratio: 1,
       tagList: [],
       currentImage:
-        "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1139702265,431383255&fm=26&gp=0.jpg",
+        "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4070108154,1620151308&fm=26&gp=0.jpg",
       photoWH: {
         sourceWH: {
           souW: 0,
@@ -44,10 +43,10 @@ export default {
   components: { AiPanel },
   mounted() {
     window.thiz = this;
-    setTimeout(() => {
-      this.currentImage =
-        "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1835849131,3531773843&fm=26&gp=0.jpg";
-    }, 5000);
+    // setTimeout(() => {
+    //   this.currentImage =
+    //     "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1835849131,3531773843&fm=26&gp=0.jpg";
+    // }, 5000);
   },
   methods: {
     onAiPanelReady() {
@@ -83,6 +82,7 @@ export default {
     }, // 松手触发
     onUpdated(data, m) {
       console.log("🦁onUpdated🦁 data=", data);
+      this.tagList = [];
       this.tagList = data;
     },
     // 单选触发

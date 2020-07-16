@@ -7,15 +7,12 @@
         @load="onImageLoad"
         style="display: block; position: absolute; user-select: none; "
       />
-      <div
+      <svg
+        id="svg_main"
         class="annotate vmr-ai-raw-image-mask"
-        style="user-select: none; position: absolute; cursor: crosshair; left: 0px; top: 0;"
-      >
-        <div
-          class="draft"
-          style="position: absolute;user-select: none;display: none;background-color: rgba(1,0,0,0.5);"
-        ></div>
-      </div>
+        style="width:100%;height:100%;user-select: none; position: absolute; cursor: crosshair; left: 0px; top: 0;"
+        @click.stop="()=>{}"
+      />
     </div>
   </div>
 </template>
@@ -168,7 +165,7 @@ export default {
       }
       self.marker = new PictureMarker(
         root.querySelector(`.annotate`), //box
-        root.querySelector(`.draft `), //draft
+        null, //draft
         self.options
       );
     },
@@ -228,6 +225,11 @@ $gulp: 10px;
     // height: round($opImageWidth * 9 / 16);
     width: 100%;
     height: 100%;
+  }
+  .g-image-op {
+    border: 1px solid red;
+    padding: 4px;
+    font-size: 12px;
   }
 }
 </style>

@@ -30,10 +30,12 @@ import {
     PREFIX_RESIZE_DOT,
     defaultPositions,
     defaultConfig,
+    resizeDotClasses,
     UUID
 } from './config';
 import Movement from './movement';
-
+import { toElement, attrtoSvg, attrstringify } from "../../../svg";
+import { Rect, RectF } from "./rect";
 export default class ResizeAnnotation {
 
     constructor(parentNode, boundRect, callback = defaultConfig, callback_handler) {
@@ -153,7 +155,7 @@ export default class ResizeAnnotation {
                         height: (100 * (data.position.y1 - data.position.y) / base.height).toFixed(3) + '%'
                     };
                 }
-                this.drawAnnotation(rect, data);
+                this.drawAnnotation(rect, data, shape = data.shape);
             });
         } else {
             this.reset();
@@ -182,7 +184,7 @@ export default class ResizeAnnotation {
             if (typeof tagOb === 'string') {
                 tag_id = tag_str = tagOb;
             }
-            const oldtag = node.querySelector(`.${imageOpTag}`).dataset.id;
+            const oldtag = node.dataset.id;
             let constData = {};
             if (typeof tagOb === 'object') {
                 tag_str = tagOb['tagName']
@@ -190,12 +192,10 @@ export default class ResizeAnnotation {
                 constData = {
                     ...tagOb
                 }
-                for (let k in tagOb) {
-                    node.querySelector(`.${imageOpTag}`).dataset[k] = tagOb[k];
-                }
             }
             let uuid = node.dataset.uuid;
-            node.querySelector(`.${imageOpTag}`).innerText = tag_str;
+            //svg has no `innerText` 
+            node.querySelector(`.${imageOpTag}`).innerHTML = tag_str;
             for (let i = 0; i < this.data.length; i++) {
                 let value = this.data[i];
                 let oldValue = Object.assign({}, value);
@@ -206,11 +206,11 @@ export default class ResizeAnnotation {
                         tag: tag_id,
                         tagName: tag_str,
                     }
-                    node.querySelector(`.${imageOpTag}`).dataset.id = tag_id;
-                    node.querySelector(`.${imageOpTag}`).dataset.name = tag_str;
+                    node.dataset.id = tag_id;
+                    node.dataset.name = tag_str;
                     this.rawConfig.onAnnoChanged(value, oldValue);
+                    this.data[i] = value;
                 }
-                this.data[i] = value;
             }
             this.rawConfig.onUpdated(this.dataSource());
         }
@@ -221,14 +221,16 @@ export default class ResizeAnnotation {
         if (this.currentMovement == null) return;
         const node = this.currentMovement.moveNode;
         let uuid = node.dataset.uuid;
-        const tag = node.querySelector(`.${imageOpTag}`).dataset.id;
+        // querySelector(`.${imageOpTag}`)
+        const tag = node.dataset.id;
+        const mainRect = node.querySelector('rect')
         let position = {
-            x: node.style.left,
-            y: node.style.top,
-            x1: (parseFloat(node.style.width) + parseFloat(node.style.left)).toFixed(3) + '%',
-            y1: (parseFloat(node.style.height) + parseFloat(node.style.top)).toFixed(3) + '%',
+            x: mainRect.getAttribute('x'),
+            y: mainRect.getAttribute('y'),
+            x1: (parseFloat(mainRect.getAttribute('width')) + parseFloat(mainRect.getAttribute('x'))).toFixed(3) + '%',
+            y1: (parseFloat(mainRect.getAttribute('height')) + parseFloat(mainRect.getAttribute('y'))).toFixed(3) + '%',
         };
-        //从原有的数据集查找该tag
+        //从原有的数据集查找该tag 
         let changed = false
         for (let i = 0; i < this.data.length; i++) {
             let value = this.data[i];
@@ -275,35 +277,69 @@ export default class ResizeAnnotation {
     }
 
     //init
-    drawAnnotation = (rect, tag = void 0) => {
-        if (!this.isValid(rect)) {
+    drawAnnotation = (rRect, tag = void 0, shape = "rect") => {
+        if (!this.isValid(rRect)) {
             return;
         }
         this.removeSelectedAnnotation();
         //创建Annotation节点
-        let annotation = document.createElement('div');
-        annotation.className = `${this.options.annotationClass} selected`;
-        annotation.style.position = 'absolute';
-        annotation.style.top = rect.y;
-        annotation.style.left = rect.x;
-        annotation.style.width = rect.width;
-        annotation.style.height = rect.height;
-        //创建8个resizeDot
-        const resizeDotClasses = {
-            top: `${PREFIX_RESIZE_DOT} top`,
-            bottom: `${PREFIX_RESIZE_DOT} bottom`,
-            left: `${PREFIX_RESIZE_DOT} left`,
-            right: `${PREFIX_RESIZE_DOT} right`,
-            topLeft: `${PREFIX_RESIZE_DOT} top-left`,
-            topRight: `${PREFIX_RESIZE_DOT} top-right`,
-            bottomLeft: `${PREFIX_RESIZE_DOT} bottom-left`,
-            bottomRight: `${PREFIX_RESIZE_DOT} bottom-right`,
-            trash: 'g-image-op',
-        };
+        // annotationContainer
+        //边框
+        let rr = this.boundRect()
+        const slotString = attrstringify({
+            ...rRect,
+            style: "stroke: #3e3e3e;fill:rgba(0,0,0,0.2)"
+        });
+        //region
+        let collectionArr = []
+        let rectStr = `<rect class="${this.options.annotationClass} selected" ${slotString}/>`;
+        collectionArr.push(rectStr)
+        // let rSize = {
+        //     x: isNaN(rRect.x) ? parseFloat(rRect.x) * 0.01 * rRect.width : rRect.x,
+        //     y: isNaN(rRect.y) ? parseFloat(rRect.y) * 0.01 * rRect.height : rRect.y,
+        //     height: rr.height * 0.01 * parseFloat(rRect.height),
+        //     width: rr.width * 0.01 * parseFloat(rRect.width),
+        // }
+        //rRect 为百分比单位
+        // 先去掉所有的%
+        let pRect = new Rect(
+            parseFloat(rRect.x),
+            parseFloat(rRect.y),
+            parseFloat(rRect.width),
+            parseFloat(rRect.height)
+        )
+        const radius = 4
+        let fontSize = 12, operPadding = 4
+        const resizeDotPoints = {
+            top: {
+                x: pRect.x + pRect.width * 0.5, y: pRect.y
+            },
+            bottom: {
+                x: pRect.x + pRect.width * 0.5, y: pRect.y + pRect.height
+            },
+            left: {
+                x: pRect.x, y: pRect.y + pRect.height * 0.5
+            },
+            right: {
+                x: pRect.x + pRect.width, y: pRect.y + pRect.height * 0.5
+            },
+            topLeft: {
+                x: pRect.x, y: pRect.y
+            },
+            topRight: {
+                x: pRect.x + pRect.width, y: pRect.y
+            },
+            bottomLeft: {
+                x: pRect.x, y: pRect.y + pRect.height
+            },
+            bottomRight: {
+                x: pRect.x + pRect.width, y: pRect.y + pRect.height
+            },
+            trash: {
+                x: pRect.x, y: pRect.y + pRect.height - (fontSize + operPadding) * 100 / rr.height
+            }
+        }
         let uu = `${UUID(16, 16)}`;
-        annotation.dataset.uuid = uu;
-        // this.rawConfig
-        let i = 0;
         let tagString, tagId;
         if (typeof tag === 'object') {
             tagString = tag.tagName;
@@ -320,52 +356,81 @@ export default class ResizeAnnotation {
                 tagName: tagString
             }
         }
+        let i = 0;
         for (let prop in resizeDotClasses) {
-            let resizeDot = document.createElement('div');
+            let point = resizeDotPoints[prop]
             if (i === 8) {
-                resizeDot.className = `${this.options.blurOtherDotsShowTags
-                    ? ''
-                    : `${dotCls[i]}`} ${resizeDotClasses[prop]}`;
-                let opContent = document.createElement('div');
-                opContent.className = imageOpContent;
-                if (!this.options.showTags) {
-                    opContent.style.visibility = 'collapse';
-                } else {
-                    opContent.style.visibility = 'visible';
-                }
-                if (this.options.tagLocation == defaultPositions.out_bottom) {
-                    opContent.style.position = 'absolute';
-                    opContent.style.bottom = null;
-                } else {
-                    opContent.style.position = null;
-                }
-                let trash = document.createElement('i');
-                trash.className = 'g-image-op-del iconfont s-icon icon-trash s-icon-trash';
-                trash.innerText = ' × ';
-                trash.addEventListener('click', this._removeAnnotationEvent, true);
-                let tag = document.createElement('span');
-                tag.dataset.name = tagString;
-                tag.className = `${imageOpTag}`;
-                tag.innerText = tagString;
-                tag.dataset.id = tagId;
-                if (this.options.trashPositionStart) {
-                    opContent.appendChild(trash);
-                    opContent.appendChild(tag);
-                } else {
-                    opContent.appendChild(tag);
-                    opContent.appendChild(trash);
-                }
-                resizeDot.appendChild(opContent);
+                let className = `${this.options.blurOtherDotsShowTags ? ''
+                    : `${dotCls[i]} `}${resizeDotClasses[prop]}`;
+                let trashclassName = 'g-image-op-del iconfont s-icon icon-trash s-icon-trash';
+                let dotTemplate =
+                    `<g class="${className}" filter="url(#tag_op_bg)" style="stroke-width:0;fill: #000000">
+                <svg x="${point.x.toFixed(2)}%" y="${point.y.toFixed(2)}%" width="100%">
+                <text class="${trashclassName}" x="${operPadding}" y="${fontSize - operPadding / 2}" font-size="${fontSize}" height="${fontSize}" style="stroke-width:0;">X</text>
+                <text x="${operPadding / 2 + fontSize}" y="${fontSize - operPadding / 2}" font-size="${fontSize}" height="${fontSize}" style="stroke-width:0;" class="${imageOpTag}">${tagString}</text>
+                </svg>
+                </g>`
+                collectionArr.push(dotTemplate)
             } else {
-                resizeDot.className = `${resizeDotClasses[prop]} ${dotCls[i]} ${this.options.editable
+                let className = `${resizeDotClasses[prop]} ${dotCls[i]} ${this.options.editable
                     ? ''
                     : 'hidden'}`;
+                let dotTemplate = `<circle class="${className}" cx="${point.x.toFixed(2)}%" cy="${point.y.toFixed(2)}%" r="${radius}" style="stroke:#006600; fill:#00cc00"/>`
+                collectionArr.push(dotTemplate)
             }
-            annotation.appendChild(resizeDot);
             i++;
         }
-        //加事件
+
+        let annotation = toElement(`<g>${collectionArr.join('')}</g>`)//group
+        annotation.dataset.uuid = uu;
+        annotation.dataset.id = tagId;
         this.annotationContainer.appendChild(annotation);
+
+        // for (let prop in resizeDotClasses) {
+        //     let resizeDot = document.createElement('div');
+        //     if (i === 8) {
+        //         resizeDot.className = `${this.options.blurOtherDotsShowTags
+        //             ? ''
+        //             : `${dotCls[i]}`} ${resizeDotClasses[prop]}`;
+        //         let opContent = document.createElement('div');
+        //         opContent.className = imageOpContent;
+        //         if (!this.options.showTags) {
+        //             opContent.style.visibility = 'collapse';
+        //         } else {
+        //             opContent.style.visibility = 'visible';
+        //         }
+        //         if (this.options.tagLocation == defaultPositions.out_bottom) {
+        //             opContent.style.position = 'absolute';
+        //             opContent.style.bottom = null;
+        //         } else {
+        //             opContent.style.position = null;
+        //         }
+        //         let trash = document.createElement('i');
+        //         trash.className = 'g-image-op-del iconfont s-icon icon-trash s-icon-trash';
+        //         trash.innerText = ' × ';
+        //         trash.addEventListener('click', this._removeAnnotationEvent, true);
+        //         let tag = document.createElement('span');
+        //         tag.dataset.name = tagString;
+        //         tag.className = `${imageOpTag}`;
+        //         tag.innerText = tagString;
+        //         tag.dataset.id = tagId;
+        //         if (this.options.trashPositionStart) {
+        //             opContent.appendChild(trash);
+        //             opContent.appendChild(tag);
+        //         } else {
+        //             opContent.appendChild(tag);
+        //             opContent.appendChild(trash);
+        //         }
+        //         resizeDot.appendChild(opContent);
+        //     } else {
+        //         resizeDot.className = `${resizeDotClasses[prop]} ${dotCls[i]} ${this.options.editable
+        //             ? ''
+        //             : 'hidden'}`;
+        //     }
+        //     annotation.appendChild(resizeDot);
+        //     i++;
+        // }
+        // //加事件
         annotation.oncontextmenu = (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -379,9 +444,10 @@ export default class ResizeAnnotation {
         }
         this.currentMovement = new Movement(annotation, 0, this.boundRect(), this.options);
         // this.selectAnnotation();
-        let dts = this.dataTemplate(tag, rect.x, rect.y,
-            parseFloat(rect.x) + parseFloat(rect.width) + '%',
-            parseFloat(rect.y) + parseFloat(rect.height) + '%')
+        let rectF = pRect.mapToRectF()
+        let dts = this.dataTemplate(tag, rectF.left + "%", rectF.top + "%",
+            rectF.right + '%',
+            rectF.bottom + '%')
         let insertItem = { ...dts, uuid: uu };
         this.data.push(insertItem);
         this.rawConfig.onAnnoAdded(insertItem, annotation);
@@ -482,11 +548,11 @@ export default class ResizeAnnotation {
             }
             if (!isUserinteracted) return;
             const node = this.currentMovement.moveNode;
-            const tag_str = node.querySelector(`.${imageOpTag}`).innerText;
-            const tagAttr = node.querySelector(`.${imageOpTag}`).dataset;
+            // const tag_str = node.querySelector(`.${imageOpTag}`).innerText;
+            const tagAttr = node.dataset;
             let selectData = {
                 ...tagAttr,
-                ...this.dataSourceOfTag(tagAttr.id, node.dataset.uuid),
+                ...this.dataSourceOfTag(tagAttr.id, tagAttr.uuid),
             }
             this.rawConfig.onAnnoSelected(selectData, node)
         }
@@ -505,7 +571,7 @@ export default class ResizeAnnotation {
     targetEventType = (e) => {
         this.removeSelectedAnnotation();
         let el = e.target;
-        let parentEl = el.classList.contains('annotation') ? el : el.parentNode;
+        let parentEl = el.classList.contains('annotation') ? el.parentNode : el.parentNode;
         if (el.classList.contains(dotCls[0])) {
             //top
             this.currentMovement = new Movement(parentEl, 0, this.boundRect(), this.options);

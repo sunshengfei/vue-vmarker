@@ -27,10 +27,11 @@ import {
   TOUCH_EVENT,
   PREFIX_RESIZE_DOT,
   defaultConfig,
+  supportShapes,
   UUID, positionP2S, transformDataArray
 } from './config';
 import ResizeAnnotation from './anno';
-
+import { toElement, attrtoSvg, attrstringify } from "../../../svg";
 class BdAIMarker {
   eventTargetOnTransform = false;
 
@@ -39,9 +40,11 @@ class BdAIMarker {
       throw 'Please provide a callback Config for BdAIMarker';
     }
     this.options = { ...defaultConfig.options, ...configs.options };
+    this.shape = supportShapes[0]
     if (layer) {
       this.layer = layer;
       this.draft = draft;
+      this.markers = []
       this.actionDown = false;
       this.draftRect = {};
       this.anchorX = -1;
@@ -49,8 +52,17 @@ class BdAIMarker {
       this.boundRect = () => {
         return layer.getBoundingClientRect();
       };
+
+      let defs = toElement(`<defs>
+  <filter x="0" y="0" width="1" height="1" id="tag_op_bg">
+    <feFlood flood-color="#fff"/>
+    <feComposite in="SourceGraphic"/>
+  </filter>
+</defs>`);
+      this.layer.appendChild(defs);
+
       this.resizeAnnotation = resizeAnnotation ? resizeAnnotation : new ResizeAnnotation(
-        draft.parentNode, this.boundRect, configs, this.$callback_handler);
+        layer, this.boundRect, configs, this.$callback_handler);
       let self = this;
       if (this.options.deviceType == 'both' || this.options.deviceType == 'mouse') {
         MOUSE_EVENT.forEach((currentValue, index, arr) => {
@@ -124,6 +136,17 @@ class BdAIMarker {
       this.anchorX = this.moveX;
       this.anchorY = this.moveY;
       this.resetDraft();
+      if (this.shape == supportShapes[0]) {
+        const slotString = attrstringify({
+          x: this.moveX,
+          y: this.moveY,
+          height: 0,
+          width: 0,
+          style: "stroke: #f1f1f1;fill:rgba(0,0,0,0.2)"
+        });
+        this.draft = toElement(`<rect ${slotString}/>`);
+        this.layer.appendChild(this.draft);
+      }
       this.anchorAt(this.anchorX, this.anchorY);
     } else if (eventType === MOUSE_EVENT[1] || eventType === TOUCH_EVENT[1]) {
       if (this.actionDown) {
@@ -201,9 +224,12 @@ class BdAIMarker {
 
   resetDraft = () => {
     //reset
+    //删除草稿
     this.draftRect = { x: -1, y: -1, width: 0, height: 0 };
-    this.draft.style.width = '0%';
-    this.draft.style.height = '0%';
+    if (this.draft) {
+      this.draft.remove()
+    }
+    // attrtoSvg(this.draft, this.draftRect);
   };
 
   /**
@@ -230,8 +256,7 @@ class BdAIMarker {
         width: widthRatio + '%',
         height: heightRatio + '%',
       });
-    this.draft.style.width = this.draftRect.width;
-    this.draft.style.height = this.draftRect.height;
+    attrtoSvg(this.draft, this.draftRect);
   };
 
 

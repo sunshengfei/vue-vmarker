@@ -3,7 +3,7 @@
 import {
   BdAIMarker,
   positionP2S
-} from 'ui-picture-bd-marker'
+} from './bdmarker'
 
 export default class PictureMarker {
   constructor(parentEl, draftEl, configs) {
@@ -35,6 +35,7 @@ export default class PictureMarker {
   // {
   //     tag: '009_X0918', //require
   //     tagName:'Diamond',//require
+  //  shape:'rect', 默认
   //     pos:2,//自定义属性 ... +
   //     position: { //require
   //       x: 350,
