@@ -41,10 +41,6 @@ export const TOUCH_EVENT = [
     'touchleave'
 ];
 
-export const supportShapes = [
-    "rect"
-]
-
 export const defaultPositions = {
     bottom: 0x01,
     out_bottom: 0x02,
@@ -100,6 +96,12 @@ export const resizeDotClasses = {
     bottomRight: `${PREFIX_RESIZE_DOT} bottom-right`,
     trash: 'g-image-op'
 };
+
+export const supportShapes = [
+    "rect",
+    "circle",
+    "polygon"
+]
 
 const UUID = (len, radix) => {
     let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');

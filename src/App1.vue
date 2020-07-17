@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { toElement, attrtoSvg, attrstringify } from "./lib/svg";
+import { toElement, attrtoSvg, attrstringify } from "aha-svg";
 const MOUSE_EVENT = [
   "mousedown",
   "mousemove",

@@ -10,7 +10,7 @@
       <svg
         id="svg_main"
         class="annotate vmr-ai-raw-image-mask"
-        style="width:100%;height:100%;user-select: none; position: absolute; cursor: crosshair; left: 0px; top: 0;"
+        style="background:gray;width:100%;height:100%;user-select: none; position: absolute; cursor: crosshair; left: 0px; top: 0;"
         @click.stop="()=>{}"
       />
     </div>

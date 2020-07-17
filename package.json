@@ -10,6 +10,8 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
+    "aha-graphic": "0.0.2",
+    "aha-svg": "0.0.1",
     "core-js": "^3.6.4",
     "ui-picture-bd-marker": "^2.3.0",
     "vue": "^2.6.11"

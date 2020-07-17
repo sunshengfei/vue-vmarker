@@ -22,6 +22,7 @@
 
 'use strict';
 import {
+    supportShapes,
     MOUSE_EVENT,
     TOUCH_EVENT,
     dotCls,
@@ -34,14 +35,17 @@ import {
     UUID
 } from './config';
 import Movement from './movement';
-import { toElement, attrtoSvg, attrstringify } from "../../../svg";
-import { Rect, RectF } from "./rect";
+import { toElement, attrtoSvg, attrstringify } from "aha-svg";
+import { Rect, RectF } from "aha-graphic";
+import { initdraft, draftresize, resizeDotPoints, getShapeAnnoSVGString, getFrameData } from "./drafthelper"
+
 export default class ResizeAnnotation {
 
     constructor(parentNode, boundRect, callback = defaultConfig, callback_handler) {
         this.options = {
             ...defaultConfig.options,
         };
+        this.currentShape = ''
         this.rawConfig = { ...defaultConfig };
         this.callback_handler = callback_handler;
         this.annotationContainer = parentNode;
@@ -91,7 +95,6 @@ export default class ResizeAnnotation {
         if (this.currentMovement && !this.options.editable) {
             this.currentMovement.moveNode.querySelectorAll(`[class*=${PREFIX_RESIZE_DOT}]`)
                 .forEach((node) => {
-
                     if (node.classList.contains(dotCls[8])) {
                         node.classList.remove('hidden');
                     } else {
@@ -110,20 +113,36 @@ export default class ResizeAnnotation {
     }
 
     //获取数据模板
-    dataTemplate = (tag, x, y, x1, y1) => {
-        if (!tag || !/^.+$/gi.test(tag)) {
-            tag = {
-                tag: `temp@${new Date().getTime()}`,
-            };
+    dataTemplate = (tagObject, rRect) => {
+        if (!/^.+$/gi.test(tagObject.tag)) {
+            tagObject.tag = `temp@${new Date().getTime()}`
+        }
+        let shape = tagObject.shape
+        let position = null
+        if (shape == supportShapes[0]) {
+            let pRect = new Rect(
+                parseFloat(rRect.x),
+                parseFloat(rRect.y),
+                parseFloat(rRect.width),
+                parseFloat(rRect.height)
+            )
+            let rectF = pRect.mapToRectF()
+            position = {
+                x: rectF.left + "%",
+                y: rectF.top + "%",
+                x1: rectF.right + "%",
+                y1: rectF.bottom + "%"
+            }
+        } else if (shape == supportShapes[1]) {
+            position = {
+                x: rRect.cx,
+                y: rRect.cy,
+                r: rRect.r
+            }
         }
         return {
-            ...tag,
-            position: {
-                x,
-                y,
-                x1,
-                y1,
-            },
+            ...tagObject,
+            position
         };
     };
 
@@ -132,7 +151,7 @@ export default class ResizeAnnotation {
     }
 
     isValid = (rect) => {
-        return rect && parseFloat(rect.width) > 1 && parseFloat(rect.height) > 1;
+        return rect && (parseFloat(rect.width) > 1 && parseFloat(rect.height) > 1 || parseFloat(rect.r) > 1);
     };
 
     renderData = (
@@ -223,19 +242,14 @@ export default class ResizeAnnotation {
         let uuid = node.dataset.uuid;
         // querySelector(`.${imageOpTag}`)
         const tag = node.dataset.id;
-        const mainRect = node.querySelector('rect')
-        let position = {
-            x: mainRect.getAttribute('x'),
-            y: mainRect.getAttribute('y'),
-            x1: (parseFloat(mainRect.getAttribute('width')) + parseFloat(mainRect.getAttribute('x'))).toFixed(3) + '%',
-            y1: (parseFloat(mainRect.getAttribute('height')) + parseFloat(mainRect.getAttribute('y'))).toFixed(3) + '%',
-        };
+        const mainElement = node.firstElementChild
         //从原有的数据集查找该tag 
         let changed = false
         for (let i = 0; i < this.data.length; i++) {
             let value = this.data[i];
             let oldValue = Object.assign({}, value);
             if (value.tag === tag && value.uuid === uuid) {
+                let position = getFrameData(mainElement, value.shape)
                 if (JSON.stringify(value.position) != JSON.stringify(position)) {
                     value.position = position;
                     this.data[i] = value;
@@ -278,6 +292,7 @@ export default class ResizeAnnotation {
 
     //init
     drawAnnotation = (rRect, tag = void 0, shape = "rect") => {
+        // debugger
         if (!this.isValid(rRect)) {
             return;
         }
@@ -286,13 +301,9 @@ export default class ResizeAnnotation {
         // annotationContainer
         //边框
         let rr = this.boundRect()
-        const slotString = attrstringify({
-            ...rRect,
-            style: "stroke: #3e3e3e;fill:rgba(0,0,0,0.2)"
-        });
         //region
         let collectionArr = []
-        let rectStr = `<rect class="${this.options.annotationClass} selected" ${slotString}/>`;
+        let rectStr = getShapeAnnoSVGString(rRect, `${this.options.annotationClass} selected`, shape);
         collectionArr.push(rectStr)
         // let rSize = {
         //     x: isNaN(rRect.x) ? parseFloat(rRect.x) * 0.01 * rRect.width : rRect.x,
@@ -300,45 +311,6 @@ export default class ResizeAnnotation {
         //     height: rr.height * 0.01 * parseFloat(rRect.height),
         //     width: rr.width * 0.01 * parseFloat(rRect.width),
         // }
-        //rRect 为百分比单位
-        // 先去掉所有的%
-        let pRect = new Rect(
-            parseFloat(rRect.x),
-            parseFloat(rRect.y),
-            parseFloat(rRect.width),
-            parseFloat(rRect.height)
-        )
-        const radius = 4
-        let fontSize = 12, operPadding = 4
-        const resizeDotPoints = {
-            top: {
-                x: pRect.x + pRect.width * 0.5, y: pRect.y
-            },
-            bottom: {
-                x: pRect.x + pRect.width * 0.5, y: pRect.y + pRect.height
-            },
-            left: {
-                x: pRect.x, y: pRect.y + pRect.height * 0.5
-            },
-            right: {
-                x: pRect.x + pRect.width, y: pRect.y + pRect.height * 0.5
-            },
-            topLeft: {
-                x: pRect.x, y: pRect.y
-            },
-            topRight: {
-                x: pRect.x + pRect.width, y: pRect.y
-            },
-            bottomLeft: {
-                x: pRect.x, y: pRect.y + pRect.height
-            },
-            bottomRight: {
-                x: pRect.x + pRect.width, y: pRect.y + pRect.height
-            },
-            trash: {
-                x: pRect.x, y: pRect.y + pRect.height - (fontSize + operPadding) * 100 / rr.height
-            }
-        }
         let uu = `${UUID(16, 16)}`;
         let tagString, tagId;
         if (typeof tag === 'object') {
@@ -351,37 +323,23 @@ export default class ResizeAnnotation {
         } else {
             tagString = '请选择或添加新标签';
             tagId = `temp@${uu}`;
-            tag = {
-                tag: tagId,
-                tagName: tagString
-            }
         }
-        let i = 0;
-        for (let prop in resizeDotClasses) {
-            let point = resizeDotPoints[prop]
-            if (i === 8) {
-                let className = `${this.options.blurOtherDotsShowTags ? ''
-                    : `${dotCls[i]} `}${resizeDotClasses[prop]}`;
-                let trashclassName = 'g-image-op-del iconfont s-icon icon-trash s-icon-trash';
-                let dotTemplate =
-                    `<g class="${className}" filter="url(#tag_op_bg)" style="stroke-width:0;fill: #000000">
-                <svg x="${point.x.toFixed(2)}%" y="${point.y.toFixed(2)}%" width="100%">
-                <text class="${trashclassName}" x="${operPadding}" y="${fontSize - operPadding / 2}" font-size="${fontSize}" height="${fontSize}" style="stroke-width:0;">X</text>
-                <text x="${operPadding / 2 + fontSize}" y="${fontSize - operPadding / 2}" font-size="${fontSize}" height="${fontSize}" style="stroke-width:0;" class="${imageOpTag}">${tagString}</text>
-                </svg>
-                </g>`
-                collectionArr.push(dotTemplate)
-            } else {
-                let className = `${resizeDotClasses[prop]} ${dotCls[i]} ${this.options.editable
-                    ? ''
-                    : 'hidden'}`;
-                let dotTemplate = `<circle class="${className}" cx="${point.x.toFixed(2)}%" cy="${point.y.toFixed(2)}%" r="${radius}" style="stroke:#006600; fill:#00cc00"/>`
-                collectionArr.push(dotTemplate)
-            }
-            i++;
+        tag = {
+            ...tag,
+            tag: tagId,
+            tagName: tagString,
+            shape
         }
-
+        let pRect = new Rect(
+            parseFloat(rRect.x),
+            parseFloat(rRect.y),
+            parseFloat(rRect.width),
+            parseFloat(rRect.height)
+        )
+        let arr = resizeDotPoints({ tagId, tagString }, rRect, rr, shape, this.options)
+        collectionArr.push(...arr)
         let annotation = toElement(`<g>${collectionArr.join('')}</g>`)//group
+        annotation.dataset.shape = shape
         annotation.dataset.uuid = uu;
         annotation.dataset.id = tagId;
         this.annotationContainer.appendChild(annotation);
@@ -444,10 +402,9 @@ export default class ResizeAnnotation {
         }
         this.currentMovement = new Movement(annotation, 0, this.boundRect(), this.options);
         // this.selectAnnotation();
-        let rectF = pRect.mapToRectF()
-        let dts = this.dataTemplate(tag, rectF.left + "%", rectF.top + "%",
-            rectF.right + '%',
-            rectF.bottom + '%')
+        let dts = this.dataTemplate(tag,
+            rRect
+        )
         let insertItem = { ...dts, uuid: uu };
         this.data.push(insertItem);
         this.rawConfig.onAnnoAdded(insertItem, annotation);
@@ -519,7 +476,10 @@ export default class ResizeAnnotation {
             if (this.options.blurOtherDots) {
                 this.currentMovement.moveNode.querySelectorAll(`[class*=${PREFIX_RESIZE_DOT}]`)
                     .forEach((node) => {
-                        node.classList.add('hidden');
+                        if (node.classList.contains(dotCls[8])) {
+                        } else {
+                            node.classList.add('hidden');
+                        }
                     });
             }
         }

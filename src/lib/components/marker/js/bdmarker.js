@@ -23,15 +23,17 @@
 'use strict';
 
 import {
+  supportShapes,
   MOUSE_EVENT,
   TOUCH_EVENT,
   PREFIX_RESIZE_DOT,
   defaultConfig,
-  supportShapes,
   UUID, positionP2S, transformDataArray
 } from './config';
 import ResizeAnnotation from './anno';
-import { toElement, attrtoSvg, attrstringify } from "../../../svg";
+import { Rect, RectF } from "aha-graphic";
+import { initdraft, draftresize, getFrameData } from "./drafthelper"
+import { toElement, attrtoSvg, attrstringify } from "aha-svg";
 class BdAIMarker {
   eventTargetOnTransform = false;
 
@@ -40,7 +42,11 @@ class BdAIMarker {
       throw 'Please provide a callback Config for BdAIMarker';
     }
     this.options = { ...defaultConfig.options, ...configs.options };
-    this.shape = supportShapes[0]
+    this.setConfigOptions({
+      options: {
+        currentShape: supportShapes[0]
+      }
+    })
     if (layer) {
       this.layer = layer;
       this.draft = draft;
@@ -63,6 +69,7 @@ class BdAIMarker {
 
       this.resizeAnnotation = resizeAnnotation ? resizeAnnotation : new ResizeAnnotation(
         layer, this.boundRect, configs, this.$callback_handler);
+      this.resizeAnnotation.currentShape = this.currentShape
       let self = this;
       if (this.options.deviceType == 'both' || this.options.deviceType == 'mouse') {
         MOUSE_EVENT.forEach((currentValue, index, arr) => {
@@ -97,6 +104,7 @@ class BdAIMarker {
     if (this.resizeAnnotation) {
       this.resizeAnnotation.setConfigOptions(newOptions);
     }
+    this.currentShape = this.options.currentShape
   }
 
   mouseEventHandler = (e, clientX, clientY) => {
@@ -136,17 +144,8 @@ class BdAIMarker {
       this.anchorX = this.moveX;
       this.anchorY = this.moveY;
       this.resetDraft();
-      if (this.shape == supportShapes[0]) {
-        const slotString = attrstringify({
-          x: this.moveX,
-          y: this.moveY,
-          height: 0,
-          width: 0,
-          style: "stroke: #f1f1f1;fill:rgba(0,0,0,0.2)"
-        });
-        this.draft = toElement(`<rect ${slotString}/>`);
-        this.layer.appendChild(this.draft);
-      }
+      this.draft = initdraft(this.moveX, this.moveY, this.currentShape)
+      this.layer.appendChild(this.draft);
       this.anchorAt(this.anchorX, this.anchorY);
     } else if (eventType === MOUSE_EVENT[1] || eventType === TOUCH_EVENT[1]) {
       if (this.actionDown) {
@@ -154,7 +153,7 @@ class BdAIMarker {
       }
     } else if (eventType === MOUSE_EVENT[4] || eventType === TOUCH_EVENT[2] || eventType === TOUCH_EVENT[4]) {
       if (this.actionDown && this.resizeAnnotation) {
-        this.resizeAnnotation.drawAnnotation(this.draftRect);
+        this.resizeAnnotation.drawAnnotation(this.draftRect, void 0, this.currentShape);
         this.resetDraft();
       }
       this.actionDown = false;
@@ -163,7 +162,7 @@ class BdAIMarker {
         // console.log(`eventType=${eventType}`);
         // console.log(this.draftRect);
         if (this.resizeAnnotation) {
-          this.resizeAnnotation.drawAnnotation(this.draftRect);
+          this.resizeAnnotation.drawAnnotation(this.draftRect, void 0, this.currentShape);
           this.resetDraft();
         }
         this.actionDown = false;
@@ -176,35 +175,23 @@ class BdAIMarker {
   //  更新定位点
   anchorAt = (x, y) => {
     if (!this.options.editable) return;
-    this.draft.style.display = '';
     if (this.moveX < x) {
-      this.draft.style.right = 100 * Math.abs(this.boundRect().width - x) / this.boundRect().width +
-        '%';
-      this.draft.style.left = '';
       this.draftRect = Object.assign(this.draftRect,
         {
           x: (100 * Math.abs(this.moveX) / this.boundRect().width).toFixed(3) + '%',
         });
     } else {
-      this.draft.style.left = (100 * Math.abs(x) / this.boundRect().width).toFixed(3) + '%';
-      this.draft.style.right = '';
       this.draftRect = Object.assign(this.draftRect,
         {
           x: (100 * Math.abs(x) / this.boundRect().width).toFixed(3) + '%',
         });
     }
     if (this.moveY < y) {
-      this.draft.style.bottom = (100 * Math.abs(this.boundRect().height - y) /
-        this.boundRect().height).toFixed(3) +
-        '%';
-      this.draft.style.top = '';
       this.draftRect = Object.assign(this.draftRect,
         {
           y: (100 * Math.abs(this.moveY) / this.boundRect().height).toFixed(3) + '%',
         });
     } else {
-      this.draft.style.top = (100 * Math.abs(y) / this.boundRect().height).toFixed(3) + '%';
-      this.draft.style.bottom = '';
       this.draftRect = Object.assign(this.draftRect,
         {
           y: (100 * Math.abs(y) / this.boundRect().height).toFixed(3) + '%',
@@ -225,7 +212,7 @@ class BdAIMarker {
   resetDraft = () => {
     //reset
     //删除草稿
-    this.draftRect = { x: -1, y: -1, width: 0, height: 0 };
+    this.draftRect = { x: -1, y: -1, width: 0, height: 0, cx: 0, cy: 0 };
     if (this.draft) {
       this.draft.remove()
     }
@@ -249,13 +236,13 @@ class BdAIMarker {
       this.actionDown = false;
     }
     this.anchorAt(this.anchorX, this.anchorY);
-    let widthRatio = (100 * Math.abs(x - this.anchorX) / this.boundRect().width).toFixed(3);
-    let heightRatio = (100 * Math.abs(y - this.anchorY) / this.boundRect().height).toFixed(3);
+    let rectF = new RectF(
+      this.anchorX,
+      this.anchorY,
+      x, y
+    )
     this.draftRect = Object.assign(this.draftRect,
-      {
-        width: widthRatio + '%',
-        height: heightRatio + '%',
-      });
+      draftresize(rectF, this.boundRect(), this.currentShape));
     attrtoSvg(this.draft, this.draftRect);
   };
 
