@@ -77,6 +77,7 @@ export default {
     let self = this;
     this.options = {
       options: {
+        supportDelKey: true,
         blurOtherDots: true,
         blurOtherDotsShowTags: true,
         editable: this.readOnly ? false : true,

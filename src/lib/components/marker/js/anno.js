@@ -482,6 +482,8 @@ export default class ResizeAnnotation {
                         }
                     });
             }
+            // fix unselect mv can be deleted
+            this.currentMovement = null
         }
     };
 

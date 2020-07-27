@@ -25,9 +25,10 @@ export function initdraft(pointX = 0, pointY = 0, shape = 'rect') {
     return toElement(`<circle ${slotString}/>`);
   }
   const slotString = attrstringify({
-    points: `"${pointX},${pointY} ${pointX},${pointY + 1} ${pointX + 1},${pointY}"`,
+    points: `${pointX},${pointY} ${pointX},${pointY + 1} ${pointX + 1},${pointY}`,
     style: "stroke: #f1f1f1;fill:rgba(0,0,0,0.2)"
   });
+  // debugger
   return toElement(`<polygon ${slotString}/>`);
 }
 
@@ -39,17 +40,11 @@ export function getShapeAnnoSVGString(rRect = {}, className, shape = 'rect') {
     });
     return `<rect class="${className}" ${slotString}/>`;
   }
-  let rectF = new RectF(
-    parseFloat(rRect.x),
-    parseFloat(rRect.y),
-    parseFloat(rRect.width),
-    parseFloat(rRect.height),
-  )
   if (shape == supportShapes[1]) {
     const slotString = attrstringify({
-      cx: rectF.left + '%',
-      cy: rectF.top + '%',
-      r: rRect.r || (Math.abs(hypotenuse(rectF.width(), rectF.height())) + '%'),
+      cx: rRect.cx,
+      cy: rRect.cy,
+      r: rRect.r,//|| (Math.abs(hypotenuse(rectF.width(), rectF.height())) + '%'),
       style: "stroke: #3e3e3e;fill:rgba(0,0,0,0.2)"
     });
     return `<circle class="${className}" ${slotString}/>`;
@@ -66,16 +61,27 @@ export function draftresize(rRectF, boundRect, shape = 'rect') {
     };
   }
   if (shape == supportShapes[1]) {
+    let cx = (100 * Math.abs(rRectF.left) / boundRect.width).toFixed(3),
+      cy = (100 * Math.abs(rRectF.top) / boundRect.height).toFixed(3),
+      radius = (Math.abs(hypotenuse(100 * rRectF.width() / boundRect.width, 100 * rRectF.height() / boundRect.height))).toFixed(3);
+    //边界判断
+    // if (cx - radius < 0.01) {
+    //   return {}
+    // }
+    // if (cx + radius > 100 - 0.01) {
+    //   return {}
+    // }
     return {
-      cx: (100 * Math.abs(rRectF.left) / boundRect.height).toFixed(3) + '%',
-      cy: (100 * Math.abs(rRectF.top) / boundRect.height).toFixed(3) + '%',
-      r: (100 * Math.abs(hypotenuse(rRectF.width(), rRectF.height())) / boundRect.height).toFixed(3) + '%'
+      cx: cx + '%',
+      cy: cy + '%',
+      r: radius + '%'
     };
   }
+  return {}
 }
 
 export function hypotenuse(a, b) {
-  return Math.sqrt(a ** 2, b ** 2)
+  return Math.sqrt(a ** 2 + b ** 2)
 }
 
 
@@ -100,8 +106,8 @@ export function getFrameData(mainElement, shape = 'rect') {
   }
   if (shape == supportShapes[1]) {
     return {
-      cx: mainElement.getAttribute('cx'),
-      cy: mainElement.getAttribute('cy'),
+      x: mainElement.getAttribute('cx'),
+      y: mainElement.getAttribute('cy'),
       r: parseFloat(mainElement.getAttribute('r')) + '%'
     };
   }

@@ -44,10 +44,12 @@ class BdAIMarker {
     this.options = { ...defaultConfig.options, ...configs.options };
     this.setConfigOptions({
       options: {
-        currentShape: supportShapes[0]
+        currentShape: supportShapes[1]
       }
     })
     if (layer) {
+      this.lastX = 0
+      this.lastY = 0
       this.layer = layer;
       this.draft = draft;
       this.markers = []
@@ -136,7 +138,9 @@ class BdAIMarker {
         return;
       }
       if (this.actionDown) {
-        this.dragTo(this.moveX, this.moveY);
+        this.drawDraft(this.moveX, this.moveY);
+        this.lastX = this.moveX;
+        this.lastY = this.moveY;
         return;
       }
       this.resizeAnnotation.removeSelectedAnnotation()
@@ -149,7 +153,9 @@ class BdAIMarker {
       this.anchorAt(this.anchorX, this.anchorY);
     } else if (eventType === MOUSE_EVENT[1] || eventType === TOUCH_EVENT[1]) {
       if (this.actionDown) {
-        this.dragTo(this.moveX, this.moveY);
+        this.drawDraft(this.moveX, this.moveY);
+        this.lastX = this.moveX;
+        this.lastY = this.moveY;
       }
     } else if (eventType === MOUSE_EVENT[4] || eventType === TOUCH_EVENT[2] || eventType === TOUCH_EVENT[4]) {
       if (this.actionDown && this.resizeAnnotation) {
@@ -161,9 +167,11 @@ class BdAIMarker {
       if (this.actionDown && this.filterOutOfBounds(this.moveX, this.moveY)) {
         // console.log(`eventType=${eventType}`);
         // console.log(this.draftRect);
-        if (this.resizeAnnotation) {
-          this.resizeAnnotation.drawAnnotation(this.draftRect, void 0, this.currentShape);
-          this.resetDraft();
+        if (_canDrawDraft(this.moveX, this.moveY)) {
+          if (this.resizeAnnotation) {
+            this.resizeAnnotation.drawAnnotation(this.draftRect, void 0, this.currentShape);
+            this.resetDraft();
+          }
         }
         this.actionDown = false;
       }
@@ -200,13 +208,14 @@ class BdAIMarker {
   };
 
   filterOutOfBounds = (x, y) => {
+    let boundRect = this.boundRect()
     return (
-      x >= this.boundRect().width ||
+      x >= boundRect.width ||
       // x >= this.boundRect().x + this.boundRect().width + 2 ||
-      y >= this.boundRect().height ||
+      y >= boundRect.height ||
       // y >= this.boundRect().y + this.boundRect().height + 2 ||
       x < 1 || y < 1
-    );
+    )
   };
 
   resetDraft = () => {
@@ -230,10 +239,13 @@ class BdAIMarker {
     this.renderData(void 0)
   };
 
-  dragTo = (x, y) => {
+  drawDraft = (x, y) => {
     if (!this.options.editable) return;
     if (this.filterOutOfBounds(x, y)) {
-      this.actionDown = false;
+      return
+    }
+    if (!this._canDrawDraft(x, y)) {
+      return
     }
     this.anchorAt(this.anchorX, this.anchorY);
     let rectF = new RectF(
@@ -246,6 +258,25 @@ class BdAIMarker {
     attrtoSvg(this.draft, this.draftRect);
   };
 
+  _canDrawDraft(x, y) {
+    if (this.currentShape == supportShapes[1]) {
+      let boundRect = this.boundRect()
+      //边界判断 demo start FIX BUG
+      let cX = this.anchorX * 100 / boundRect.width,
+        cY = this.anchorY * 100 / boundRect.height,
+        rX = x * 100 / boundRect.width,
+        rY = y * 100 / boundRect.height
+      let limitPer = this.options.boundReachPercent || 0
+      let calculateR = Math.sqrt((rX - cX) ** 2 + (rY - cY) ** 2)
+      if (cX - calculateR < limitPer || cX + calculateR > 100 - limitPer) {
+        return false
+      }
+      if (cY - calculateR < limitPer || cY + calculateR > 100 - limitPer) {
+        return false
+      }
+    }
+    return true
+  }
 
   /**
    * 渲染数据
