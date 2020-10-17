@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 'use strict';
-
+import './compatible'
 import {
   MOUSE_EVENT,
   TOUCH_EVENT,
@@ -50,7 +50,7 @@ class BdAIMarker {
         return layer.getBoundingClientRect();
       };
       this.resizeAnnotation = resizeAnnotation ? resizeAnnotation : new ResizeAnnotation(
-        draft.parentNode, this.boundRect, configs, this.$callback_handler);
+        draft.parentNode, this._compatibalBoundRect, configs, this.$callback_handler);
       let self = this;
       if (this.options.deviceType == 'both' || this.options.deviceType == 'mouse') {
         MOUSE_EVENT.forEach((currentValue, index, arr) => {
@@ -87,11 +87,26 @@ class BdAIMarker {
     }
   }
 
+  _compatibalBoundRect = () => {
+    let boundRect = this.boundRect();
+    if (typeof boundRect.x != 'undefined') return boundRect;
+    return {
+      x: boundRect.left,
+      y: boundRect.top,
+      left: boundRect.left,
+      top: boundRect.top,
+      right: boundRect.right,
+      bottom: boundRect.bottom,
+      width: boundRect.width,
+      height: boundRect.height
+    }
+  }
+
   mouseEventHandler = (e, clientX, clientY) => {
     // e.preventDefault();
     // e.stopPropagation();
     let eventType = e.type;
-    let boundRect = this.boundRect();
+    let boundRect = this._compatibalBoundRect();
     if (clientX) {
       this.moveX = clientX - boundRect.x;
     }
@@ -153,48 +168,49 @@ class BdAIMarker {
   //  更新定位点
   anchorAt = (x, y) => {
     if (!this.options.editable) return;
+    let ccRect = this._compatibalBoundRect()
     this.draft.style.display = '';
     if (this.moveX < x) {
-      this.draft.style.right = 100 * Math.abs(this.boundRect().width - x) / this.boundRect().width +
+      this.draft.style.right = 100 * Math.abs(ccRect.width - x) / ccRect.width +
         '%';
       this.draft.style.left = '';
       this.draftRect = Object.assign(this.draftRect,
         {
-          x: (100 * Math.abs(this.moveX) / this.boundRect().width).toFixed(3) + '%',
+          x: (100 * Math.abs(this.moveX) / ccRect.width).toFixed(3) + '%',
         });
     } else {
-      this.draft.style.left = (100 * Math.abs(x) / this.boundRect().width).toFixed(3) + '%';
+      this.draft.style.left = (100 * Math.abs(x) / ccRect.width).toFixed(3) + '%';
       this.draft.style.right = '';
       this.draftRect = Object.assign(this.draftRect,
         {
-          x: (100 * Math.abs(x) / this.boundRect().width).toFixed(3) + '%',
+          x: (100 * Math.abs(x) / ccRect.width).toFixed(3) + '%',
         });
     }
     if (this.moveY < y) {
-      this.draft.style.bottom = (100 * Math.abs(this.boundRect().height - y) /
-        this.boundRect().height).toFixed(3) +
+      this.draft.style.bottom = (100 * Math.abs(ccRect.height - y) /
+        ccRect.height).toFixed(3) +
         '%';
       this.draft.style.top = '';
       this.draftRect = Object.assign(this.draftRect,
         {
-          y: (100 * Math.abs(this.moveY) / this.boundRect().height).toFixed(3) + '%',
+          y: (100 * Math.abs(this.moveY) / ccRect.height).toFixed(3) + '%',
         });
     } else {
-      this.draft.style.top = (100 * Math.abs(y) / this.boundRect().height).toFixed(3) + '%';
+      this.draft.style.top = (100 * Math.abs(y) / ccRect.height).toFixed(3) + '%';
       this.draft.style.bottom = '';
       this.draftRect = Object.assign(this.draftRect,
         {
-          y: (100 * Math.abs(y) / this.boundRect().height).toFixed(3) + '%',
+          y: (100 * Math.abs(y) / ccRect.height).toFixed(3) + '%',
         });
     }
   };
 
   filterOutOfBounds = (x, y) => {
     return (
-      x >= this.boundRect().width ||
-      // x >= this.boundRect().x + this.boundRect().width + 2 ||
-      y >= this.boundRect().height ||
-      // y >= this.boundRect().y + this.boundRect().height + 2 ||
+      x >= this._compatibalBoundRect().width ||
+      // x >= this._compatibalBoundRect().x + this._compatibalBoundRect().width + 2 ||
+      y >= this._compatibalBoundRect().height ||
+      // y >= this._compatibalBoundRect().y + this._compatibalBoundRect().height + 2 ||
       x < 1 || y < 1
     );
   };
@@ -223,8 +239,8 @@ class BdAIMarker {
       this.actionDown = false;
     }
     this.anchorAt(this.anchorX, this.anchorY);
-    let widthRatio = (100 * Math.abs(x - this.anchorX) / this.boundRect().width).toFixed(3);
-    let heightRatio = (100 * Math.abs(y - this.anchorY) / this.boundRect().height).toFixed(3);
+    let widthRatio = (100 * Math.abs(x - this.anchorX) / this._compatibalBoundRect().width).toFixed(3);
+    let heightRatio = (100 * Math.abs(y - this.anchorY) / this._compatibalBoundRect().height).toFixed(3);
     this.draftRect = Object.assign(this.draftRect,
       {
         width: widthRatio + '%',

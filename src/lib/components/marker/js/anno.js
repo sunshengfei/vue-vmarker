@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 'use strict';
+import './compatible'
 import {
     MOUSE_EVENT,
     TOUCH_EVENT,
@@ -408,6 +409,7 @@ export default class ResizeAnnotation {
             clientX = touch ? touch.clientX : undefined
             clientY = touch ? touch.clientY : undefined
         }
+        console.log('eventType', eventType)
         this.moveX = clientX;//- this.boundRect().x;
         this.moveY = clientY;//- this.boundRect().y;
         if (eventType === MOUSE_EVENT[0] || eventType === TOUCH_EVENT[0]) {
