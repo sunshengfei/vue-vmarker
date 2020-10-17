@@ -15,6 +15,11 @@ github仓库地址：[https://github.com/sunshengfei/vue-ui-picture-bd-marker](h
 更新说明
 ---
 
+## v1.3.8
+
+同步更新`ui-picture-bd-marker`修复的bug
+
+
 ## v1.3.7
 
 删除@vmarker:onSelect、@vmarker:onDrawOne事件
