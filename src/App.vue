@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { AIMarker as AiPanel } from "./lib/index"; //vue-picture-bd-marker
+import { AIMarker as AiPanel } from "vue-picture-bd-marker";//"./lib/index"; //vue-picture-bd-marker
 export default {
   name: "app",
   data() {
@@ -52,6 +52,7 @@ export default {
   methods: {
     onAiPanelReady() {
       let mirror = this.$refs["aiPanel-editor"];
+      window.marker = mirror;
       // mirror.getMarker().updateConfig(
       //   );
       // setTimeout(() => {
