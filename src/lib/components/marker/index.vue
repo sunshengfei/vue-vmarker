@@ -111,7 +111,7 @@ export default {
         self.$emit("vmarker:onAnnoSelected", value, element, self.key);
       },
       onUpdated: function(data) {
-        self.$emit("vmarker:onUpdated", data, this.key);
+        self.$emit("vmarker:onUpdated", data, self.key);
       }
     };
     if (/^.+$/.test(this.imgUrl)) {
