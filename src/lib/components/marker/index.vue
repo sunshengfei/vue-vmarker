@@ -1,6 +1,13 @@
 <template>
-  <div class="vmr-ai-panel" :loading="loading" :class="rootClass">
-    <div class="vmr-g-image" style="position: relative; overflow: hidden;">
+  <div
+    class="vmr-ai-panel"
+    :loading="loading"
+    :class="rootClass"
+  >
+    <div
+      class="vmr-g-image"
+      style="position: relative; overflow: hidden;"
+    >
       <img
         class="vmr-ai-raw-image"
         :src="currentBaseImage"
@@ -86,7 +93,7 @@ export default {
         trashPositionStart: 1
       },
       onAnnoContextMenu: function(annoData, element, annoContext) {
-        // console.log("🦁onAnnoContextMenu🦁 data=", annoData);
+        // console.log("🦁onAnnoContextMenu🦁 data=", annoData, element);
         self.$emit("vmarker:onAnnoContextMenu", annoData, element, self.key);
       },
       onAnnoRemoved: function(annoData) {

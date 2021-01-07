@@ -5,6 +5,7 @@
       class="ai-observer"
       :ratio="ratio"
       v-bind:uniqueKey="111"
+      @vmarker:onAnnoContextMenu="onAnnoContextMenu"
       @vmarker:onAnnoSelected="onAnnoSelected"
       @vmarker:onAnnoRemoved="onAnnoRemoved"
       @vmarker:onAnnoAdded="onAnnoAdded"
@@ -21,6 +22,7 @@
 
 <script>
 import { AIMarker as AiPanel } from "vue-picture-bd-marker";//"./lib/index"; //vue-picture-bd-marker
+// import { AIMarker as AiPanel } from "./lib/index"; //vue-picture-bd-marker
 export default {
   name: "app",
   data() {
@@ -50,6 +52,9 @@ export default {
     }, 5000);
   },
   methods: {
+    onAnnoContextMenu() {
+      console.log("onAnnoContextMenu 右键菜单");
+    },
     onAiPanelReady() {
       let mirror = this.$refs["aiPanel-editor"];
       window.marker = mirror;
@@ -83,7 +88,7 @@ export default {
       console.log("onImageLoad", rawData, key);
     }, // 松手触发
     onUpdated(data, m) {
-      console.log("🦁onUpdated🦁 data=", data,m);
+      console.log("🦁onUpdated🦁 data=", data, m);
       this.tagList = data;
     },
     // 单选触发

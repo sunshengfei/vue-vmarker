@@ -1,25 +1,3 @@
-// MIT License
-
-// Copyright (c) 2018 FredDon
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 'use strict';
 import './compatible'
 import {
@@ -36,7 +14,7 @@ class BdAIMarker {
 
   constructor(layer, draft, resizeAnnotation, configs = {}) {
     if (typeof configs !== 'object') {
-      throw 'Please provide a callback Config for BdAIMarker';
+      throw new Error('Please provide a callback Config for BdAIMarker');
     }
     this.options = { ...defaultConfig.options, ...configs.options };
     if (layer) {
@@ -55,6 +33,9 @@ class BdAIMarker {
       if (this.options.deviceType == 'both' || this.options.deviceType == 'mouse') {
         MOUSE_EVENT.forEach((currentValue, index, arr) => {
           layer.addEventListener(currentValue, (e) => {
+            if (this.options.deviceType == 'touch') {
+              return
+            }
             let x = e.clientX,
               y = e.clientY;
             self.mouseEventHandler(e, x, y);
@@ -63,7 +44,11 @@ class BdAIMarker {
       }
       if (this.options.deviceType == 'both' || this.options.deviceType == 'touch') {
         TOUCH_EVENT.forEach((currentValue, index, arr) => {
+
           layer.addEventListener(currentValue, (e) => {
+            if (this.options.deviceType == 'mouse') {
+              return
+            }
             if (e.targetTouches) {
               let touch = e.targetTouches[0]
               let x = touch ? touch.clientX : undefined,
