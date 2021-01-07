@@ -1,5 +1,8 @@
 # vue-picture-bd-marker
 
+![](https://img.shields.io/github/license/sunshengfei/vue-ui-picture-bd-marker) ![](https://img.shields.io/npm/v/vue-picture-bd-marker.svg?color=%23ff4400&style=popout)
+
+
 效果图：
 
 ![](https://sagocloud.com/ibucket/vm_sample.jpg)
@@ -75,7 +78,7 @@ config = {
         self.$emit("vmarker:onAnnoSelected", value, element, self.key);
       },
       onUpdated: function(data) {
-        self.$emit("vmarker:onUpdated", data, this.key);
+        self.$emit("vmarker:onUpdated", data, self.key);
       }
     };
 ```
