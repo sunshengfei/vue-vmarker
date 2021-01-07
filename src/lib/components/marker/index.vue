@@ -93,7 +93,7 @@ export default {
         trashPositionStart: 1
       },
       onAnnoContextMenu: function(annoData, element, annoContext) {
-        // console.log("🦁onAnnoContextMenu🦁 data=", annoData, element);
+        console.log("🦁onAnnoContextMenu🦁 data=", annoData, element);
         self.$emit("vmarker:onAnnoContextMenu", annoData, element, self.key);
       },
       onAnnoRemoved: function(annoData) {
