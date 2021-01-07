@@ -18,6 +18,10 @@ github仓库地址：[https://github.com/sunshengfei/vue-ui-picture-bd-marker](h
 更新说明
 ---
 
+## v1.4.1
+---
+提升`ui-picture-bd-marker`最低版本
+
 ## v1.3.8
 
 同步更新`ui-picture-bd-marker`修复的bug

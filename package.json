@@ -1,9 +1,9 @@
 {
   "name": "@sunshengfei/vue-picture-bd-marker",
   "description": "关于ui-picture-bd-marker插件的Vue封装",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": "freddon <gsiner@live.com>",
-  "license": "MIT",
+  "license": "Apache-2.0 License",
   "private": false,
   "main": "dist/index.js",
   "repository": {
@@ -55,7 +55,7 @@
     "sass-loader": "^6.0.6",
     "vue-loader": "^13.0.5",
     "vue-template-compiler": "^2.4.4",
-    "webpack": "^5.11.1",
+    "webpack": "^3.6.0",
     "webpack-cli": "^4.0.0",
     "webpack-dev-server": "^3.11.0"
   },
