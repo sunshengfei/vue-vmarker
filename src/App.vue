@@ -4,7 +4,7 @@
       ref="aiPanel-editor"
       class="ai-observer"
       :ratio="ratio"
-      v-bind:uniqueKey="1"
+      v-bind:uniqueKey="111"
       @vmarker:onAnnoSelected="onAnnoSelected"
       @vmarker:onAnnoRemoved="onAnnoRemoved"
       @vmarker:onAnnoAdded="onAnnoAdded"
@@ -83,7 +83,7 @@ export default {
       console.log("onImageLoad", rawData, key);
     }, // 松手触发
     onUpdated(data, m) {
-      console.log("🦁onUpdated🦁 data=", data);
+      console.log("🦁onUpdated🦁 data=", data,m);
       this.tagList = data;
     },
     // 单选触发
