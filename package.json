@@ -12,8 +12,7 @@
   "dependencies": {
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
-    "vue-picture-bd-marker": "^1.4.0",
-    "ui-picture-bd-marker": "^2.3.3"
+    "vue-picture-bd-marker": "^1.4.1"
   },
   "browserslist": [
     "> 1%",
