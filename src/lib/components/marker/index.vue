@@ -1,6 +1,13 @@
 <template>
-  <div class="vmr-ai-panel" :loading="loading" :class="rootClass">
-    <div class="vmr-g-image" style="position: relative; overflow: hidden;">
+  <div
+    class="vmr-ai-panel"
+    :loading="loading"
+    :class="rootClass"
+  >
+    <div
+      class="vmr-g-image"
+      style="position: relative; overflow: hidden;"
+    >
       <img
         class="vmr-ai-raw-image"
         :src="currentBaseImage"
@@ -61,8 +68,8 @@ export default {
   data() {
     return {
       emptyImg: empImg,
-      options: void 0,
-      currentBaseImage: void 0,
+      options: undefined,
+      currentBaseImage: undefined,
       rootClass: "",
       key: "",
       wratioh: this.ratio,
@@ -71,7 +78,7 @@ export default {
   },
   beforeMount() {
     this.key = this.uniqueKey;
-    this.rootClass = this.uniqueKey ? `pannel-${this.uniqueKey}` : void 0;
+    this.rootClass = this.uniqueKey ? `pannel-${this.uniqueKey}` : undefined;
   },
   mounted() {
     this.__updateFrame();
@@ -82,7 +89,7 @@ export default {
       options: {
         blurOtherDots: true,
         blurOtherDotsShowTags: true,
-        editable: this.readOnly ? false : true,
+        editable: !this.readOnly,
         trashPositionStart: 1
       },
       onAnnoContextMenu: function(annoData, element, annoContext) {

@@ -1,18 +1,26 @@
 {
-  "name": "@sunshengfei/vue-picture-bd-marker",
+  "name": "@sunshengfei/vue-vmarker",
   "description": "关于ui-picture-bd-marker插件的Vue封装",
-  "version": "1.4.1",
+  "version": "1.4.1-beta02",
   "author": "freddon <gsiner@live.com>",
   "license": "Apache-2.0 License",
   "private": false,
-  "main": "dist/index.js",
+  "main": "dist/index.umd.min.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sunshengfei/vue-ui-picture-bd-marker"
+    "url": "git+https://github.com/sunshengfei/vue-vmarker"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "bugs": {
+    "url": "https://github.com/sunshengfei/vue-vmarker/issues"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "lib": "vue-cli-service build --target lib --name index ./src/lib/index.js"
   },
   "keywords": [
     "marker",
@@ -23,43 +31,24 @@
     "标注"
   ],
   "dependencies": {
-    "ui-picture-bd-marker": "^2.3.3",
-    "vue": "^2.5.11"
+    "core-js": "^3.6.5",
+    "ui-picture-bd-marker": "^2.3.5",
+    "vue": "^2.6.11"
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ],
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.1",
-    "babel-helper-vue-jsx-merge-props": "^2.0.3",
-    "babel-jest": "^24.7.1",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-dynamic-import-node": "^1.2.0",
-    "babel-plugin-syntax-dynamic-import": "^6.18.0",
-    "babel-plugin-syntax-jsx": "^6.18.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
-    "babel-plugin-transform-runtime": "^6.22.0",
-    "babel-plugin-transform-vue-jsx": "^3.5.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
-    "babel-preset-stage-2": "^6.22.0",
-    "babel-preset-stage-3": "^6.24.1",
-    "babel-register": "^6.22.0",
-    "cross-env": "^5.0.5",
-    "css-loader": "^2.1.1",
-    "file-loader": "^1.1.4",
-    "node-sass": "^4.14.1",
-    "sass-loader": "^6.0.6",
-    "vue-loader": "^13.0.5",
-    "vue-template-compiler": "^2.4.4",
-    "webpack": "^3.6.0",
-    "webpack-cli": "^4.0.0",
-    "webpack-dev-server": "^3.11.0"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/eslint-config-standard": "^5.1.2",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^6.2.2",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.11"
   }
 }

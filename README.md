@@ -3,6 +3,12 @@
 ![](https://img.shields.io/github/license/sunshengfei/vue-ui-picture-bd-marker) ![](https://img.shields.io/npm/v/vue-picture-bd-marker.svg?color=%23ff4400&style=popout)
 
 
+```
+npm i vue-picture-bd-marker
+
+```
+
+
 效果图：
 
 ![](https://sagocloud.com/ibucket/vm_sample.jpg)
@@ -18,7 +24,7 @@ github仓库地址：[https://github.com/sunshengfei/vue-ui-picture-bd-marker](h
 更新说明
 ---
 
-## v1.4.1
+## 1.4.1-beta02
 ---
 提升`ui-picture-bd-marker`最低版本
 
