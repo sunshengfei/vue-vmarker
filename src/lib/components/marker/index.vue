@@ -11,8 +11,8 @@
       <img
         class="vmr-ai-raw-image"
         :src="currentBaseImage"
+        style="display: block; position: absolute; user-select: none;"
         @load="onImageLoad"
-        style="display: block; position: absolute; user-select: none; "
       />
       <div
         class="annotate vmr-ai-raw-image-mask"
@@ -21,7 +21,8 @@
         <div
           class="draft"
           style="position: absolute;user-select: none;display: none;background-color: rgba(1,0,0,0.5);"
-        ></div>
+        >
+        </div>
       </div>
     </div>
   </div>
@@ -31,38 +32,24 @@ import PictureMarker from "./js/marker";
 import "ui-picture-bd-marker/styles/bdmarker.scss";
 const empImg = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==`;
 export default {
-  name: "vue-ai-marker",
+  name: "VueAiMarker",
   props: {
     readOnly: Boolean,
-    imgUrl: String,
-    uniqueKey: [String, Number],
-    width: [String, Number],
+    imgUrl: {
+      type: String,
+      default: ""
+    },
+    uniqueKey: {
+      type: [String, Number],
+      default: ""
+    },
+    width: {
+      type: [String, Number],
+      default: () => ""
+    },
     ratio: {
       default: 16 / 9,
       type: Number
-    }
-  },
-  watch: {
-    imgUrl: function(n, o) {
-      this.currentBaseImage = n;
-    },
-    width: function(n, o) {
-      this.__updateFrame();
-    },
-    readOnly: function(n, o) {
-      this.options.options = {
-        ...this.options.options,
-        editable: !n
-      };
-      if (this.marker) {
-        this.marker.updateConfig(this.options);
-      }
-    },
-    ratio: function(n, o) {
-      if (n) {
-        this.wratioh = n;
-        this.__updateFrame();
-      }
     }
   },
   data() {
@@ -131,10 +118,6 @@ export default {
       self.$emit("vmarker:onReady", self.key);
     });
   },
-  activated() {
-    this.rootClass = `pannel-${this.key}`;
-    this.$emit("vmarker:onReady", this.key);
-  },
   methods: {
     getMarker() {
       return this.marker;
@@ -160,6 +143,8 @@ export default {
           element.style.height =
             parseInt(root.clientWidth) / this.wratioh + "px";
         });
+      let rect = root.getBoundingClientRect();
+      this.$emit("vmarker:onSize", JSON.parse(JSON.stringify(rect)));
     },
     __initMarker() {
       let self = this;
@@ -207,8 +192,35 @@ export default {
       }
     },
     renderer(imageUrl) {
-      this.currentBaseImage = this.imgUrl = imageUrl;
+      this.currentBaseImage = imageUrl;
     }
+  },
+  watch: {
+    imgUrl: function(n, o) {
+      this.currentBaseImage = n;
+    },
+    width: function(n, o) {
+      this.__updateFrame();
+    },
+    readOnly: function(n, o) {
+      this.options.options = {
+        ...this.options.options,
+        editable: !n
+      };
+      if (this.marker) {
+        this.marker.updateConfig(this.options);
+      }
+    },
+    ratio: function(n, o) {
+      if (n) {
+        this.wratioh = n;
+        this.__updateFrame();
+      }
+    }
+  },
+  activated() {
+    this.rootClass = `pannel-${this.key}`;
+    this.$emit("vmarker:onReady", this.key);
   }
 };
 </script>

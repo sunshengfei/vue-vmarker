@@ -3,7 +3,7 @@
     <AiPanel
       ref="aiPanel-editor"
       class="ai-observer"
-      :ratio="ratio"
+      v-bind:ratio="ratio"
       v-bind:uniqueKey="'unique_uuid_or_sth'"
       @vmarker:onAnnoContextMenu="onAnnoContextMenu"
       @vmarker:onAnnoSelected="onAnnoSelected"
@@ -12,23 +12,25 @@
       @vmarker:onUpdated="onUpdated"
       @vmarker:onReady="onAiPanelReady"
       @vmarker:onImageLoad="onImageLoad"
-      v-bind:readOnly="false"
+      @vmarker:onSize="onSize"
+      v-bind:readOnly="readOnly"
       v-bind:imgUrl="currentImage"
     ></AiPanel>
-
-    <div>"data:"{{tagList}}</div>
+    <div>"data:"{{ tagList }}</div>
   </div>
 </template>
 
 <script>
-// import { AIMarker as AiPanel } from "@/lib/index"; //vue-picture-bd-marker
-import { AIMarker as AiPanel } from "vue-picture-bd-marker"; //vue-picture-bd-marker
+import { AIMarker as AiPanel } from "@/lib/index"; //vue-picture-bd-marker
+// import { AIMarker as AiPanel } from "vue-picture-bd-marker"; //vue-picture-bd-marker
 // import "vue-picture-bd-marker/dist/vue-picture-bd-marker.css";
 export default {
-  name: "app",
+  name: "VMarkerApp",
+  components: { AiPanel },
   data() {
     return {
       ratio: 1,
+      readOnly: false,
       tagList: [],
       currentImage:
         "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1139702265,431383255&fm=26&gp=0.jpg",
@@ -44,7 +46,6 @@ export default {
       }
     };
   },
-  components: { AiPanel },
   mounted() {
     window.thiz = this;
     setTimeout(() => {
@@ -85,6 +86,9 @@ export default {
       //   window.dd = data;
       //   mirror.renderData(data);
       // }, 5000);
+    },
+    onSize({ width, height }) {
+      console.log(...arguments);
     },
     onImageLoad(rawData, key) {
       console.log("onImageLoad", rawData, key);

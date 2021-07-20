@@ -11,7 +11,7 @@ npm i vue-picture-bd-marker
 
 效果图：
 
-![](https://sagocloud.com/ibucket/vm_sample.jpg)
+![](https://github.com/sunshengfei/ui-picture-bd-marker/blob/master/demo.png?raw=true)
 
 
 > 关于[ui-picture-bd-marker](https://www.npmjs.com/package/ui-picture-bd-marker)插件的Vue组件封装
@@ -24,9 +24,11 @@ github仓库地址：[https://github.com/sunshengfei/vue-ui-picture-bd-marker](h
 更新说明
 ---
 
-## 1.4.1-beta02
+## 1.4.2
 ---
-提升`ui-picture-bd-marker`最低版本
+1、提升`ui-picture-bd-marker`最低版本
+2、修复readonly属性响应失效问题
+
 
 ## v1.3.8
 

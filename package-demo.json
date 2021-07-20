@@ -1,14 +1,17 @@
 {
-  "name": "vue-picture-bd-marker",
+  "name": "@sunshengfei/vue-vmarker",
   "description": "关于ui-picture-bd-marker插件的Vue封装",
   "version": "1.4.3",
   "author": "freddon <gsiner@live.com>",
   "license": "Apache-2.0 License",
   "private": false,
-  "main": "dist/index.umd.min.js",
+  "main": "examples/main.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sunshengfei/vue-vmarker"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "bugs": {
     "url": "https://github.com/sunshengfei/vue-vmarker/issues"
@@ -30,8 +33,9 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "eslint-plugin-vue": "^7.12.1",
-    "ui-picture-bd-marker": "^2.3.6",
-    "vue": "^2.6.11"
+    "ui-picture-bd-marker": "^2.3.5",
+    "vue": "^2.6.11",
+    "vue-picture-bd-marker": "*"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.13",
@@ -40,8 +44,8 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.2",
-    "node-sass": "^4.14.1",
-    "sass-loader": "^7.3.1",
+    "node-sass": "4.14.1",
+    "sass-loader": "7.3.1",
     "vue-template-compiler": "^2.6.11"
   }
 }
