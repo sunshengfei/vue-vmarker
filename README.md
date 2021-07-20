@@ -24,6 +24,11 @@ github仓库地址：[https://github.com/sunshengfei/vue-ui-picture-bd-marker](h
 更新说明
 ---
 
+## 1.4.3
+---
+1、增加`@vmarker:onSize="onSize"`事件，返回区域大小与位置
+
+
 ## 1.4.2
 ---
 1、提升`ui-picture-bd-marker`最低版本
