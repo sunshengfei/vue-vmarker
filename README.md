@@ -24,6 +24,14 @@ github仓库地址：[https://github.com/sunshengfei/vue-ui-picture-bd-marker](h
 更新说明
 ---
 
+## 1.4.5
+---
+1、支持长图模式，外部可以套div进行overflow，只需要在vue组件设置width和ratio组合值即可
+   1. width:auto 容器宽度将会使用原有图像宽度
+   2. ratio:0    使用原图像缩放比
+2、修复github issues的一些bug
+3、外层增加class `g-handler-touchable`将开启，响应式touch handler外形变化
+
 ## 1.4.3
 ---
 1、增加`@vmarker:onSize="onSize"`事件，返回区域大小与位置

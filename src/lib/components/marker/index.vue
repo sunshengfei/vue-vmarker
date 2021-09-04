@@ -37,20 +37,20 @@ export default {
     readOnly: Boolean,
     imgUrl: {
       type: String,
-      default: ""
+      default: "",
     },
     uniqueKey: {
       type: [String, Number],
-      default: ""
+      default: "",
     },
     width: {
       type: [String, Number],
-      default: () => ""
+      default: () => "",
     },
     ratio: {
       default: 16 / 9,
-      type: Number
-    }
+      type: Number,
+    },
   },
   data() {
     return {
@@ -60,7 +60,7 @@ export default {
       rootClass: "",
       key: "",
       wratioh: this.ratio,
-      loading: true
+      loading: true,
     };
   },
   beforeMount() {
@@ -77,7 +77,7 @@ export default {
         blurOtherDots: true,
         blurOtherDotsShowTags: true,
         editable: !this.readOnly,
-        trashPositionStart: 1
+        trashPositionStart: 1,
       },
       onAnnoContextMenu: function(annoData, element, annoContext) {
         // console.log("🦁onAnnoContextMenu🦁 data=", annoData);
@@ -106,7 +106,7 @@ export default {
       },
       onUpdated: function(data) {
         self.$emit("vmarker:onUpdated", data, self.key);
-      }
+      },
     };
     if (/^.+$/.test(this.imgUrl)) {
       this.currentBaseImage = this.imgUrl;
@@ -132,16 +132,30 @@ export default {
       if (!this.width) {
         width = "100%";
       }
-      root.style.width = width.endsWith("%") ? width : parseInt(width) + "px";
-      root.style.height = root.clientWidth / this.wratioh + "px";
+      if (this.width == "auto") {
+        root.style.width = "auto";
+      } else {
+        root.style.width = width.endsWith("%") ? width : parseInt(width) + "px";
+      }
+      if (this.wratioh == 0) {
+        root.style.height = "auto";
+      } else {
+        root.style.height = root.clientWidth / this.wratioh + "px";
+      }
       root
         .querySelectorAll(
           ".vmr-g-image,.vmr-ai-raw-image,.vmr-ai-raw-image-mask"
         )
-        .forEach(element => {
-          element.style.width = root.style.width;
-          element.style.height =
-            parseInt(root.clientWidth) / this.wratioh + "px";
+        .forEach((element) => {
+          // element.style.width = root.style.width;
+          // element.style.height =
+          //   parseInt(root.clientWidth) / this.wratioh + "px";
+          if (this.wratioh == 0) {
+            element.style.height = "auto";
+          } else {
+            element.style.height =
+              parseInt(root.clientWidth) / this.wratioh + "px";
+          }
         });
       let rect = root.getBoundingClientRect();
       this.$emit("vmarker:onSize", JSON.parse(JSON.stringify(rect)));
@@ -163,8 +177,32 @@ export default {
         rawW: e.target.naturalWidth,
         rawH: e.target.naturalHeight,
         currentW: e.target.offsetWidth,
-        currentH: e.target.offsetHeight
+        currentH: e.target.offsetHeight,
       };
+      let root = this.$el;
+      if (this.width == "auto") {
+        root.style.width = rawData.rawW + "px";
+        root.style.height = rawData.rawH + "px";
+        root
+          .querySelectorAll(
+            ".vmr-g-image,.vmr-ai-raw-image,.vmr-ai-raw-image-mask"
+          )
+          .forEach((element) => {
+            element.style.height = root.style.height;
+            element.style.overflow = "auto";
+          });
+      } else if (this.wratioh == 0) {
+        root.style.height = rawData.currentH + "px";
+        root
+          .querySelectorAll(
+            ".vmr-g-image,.vmr-ai-raw-image,.vmr-ai-raw-image-mask"
+          )
+          .forEach((element) => {
+            if (this.wratioh == 0) {
+              element.style.height = root.style.height;
+            }
+          });
+      }
       if (!this.currentBaseImage.startsWith("data")) {
         this.$emit("vmarker:onImageLoad", rawData, this.key);
       }
@@ -193,7 +231,7 @@ export default {
     },
     renderer(imageUrl) {
       this.currentBaseImage = imageUrl;
-    }
+    },
   },
   watch: {
     imgUrl: function(n, o) {
@@ -205,7 +243,7 @@ export default {
     readOnly: function(n, o) {
       this.options.options = {
         ...this.options.options,
-        editable: !n
+        editable: !n,
       };
       if (this.marker) {
         this.marker.updateConfig(this.options);
@@ -216,12 +254,12 @@ export default {
         this.wratioh = n;
         this.__updateFrame();
       }
-    }
+    },
   },
   activated() {
     this.rootClass = `pannel-${this.key}`;
     this.$emit("vmarker:onReady", this.key);
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>

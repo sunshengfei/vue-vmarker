@@ -29,29 +29,29 @@ export default {
   components: { AiPanel },
   data() {
     return {
-      ratio: 1,
+      ratio: 0,
       readOnly: false,
       tagList: [],
       currentImage:
-        "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1139702265,431383255&fm=26&gp=0.jpg",
+        "http://img-arch.pconline.com.cn/images/upload/upc/tx/photoblog/1705/12/c11/46768852_1494588861915.jpg",
       photoWH: {
         sourceWH: {
           souW: 0,
-          souH: 0
+          souH: 0,
         },
         newWH: {
           newW: 0,
-          newH: 0
-        }
-      }
+          newH: 0,
+        },
+      },
     };
   },
   mounted() {
     window.thiz = this;
-    setTimeout(() => {
-      this.currentImage =
-        "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1835849131,3531773843&fm=26&gp=0.jpg";
-    }, 5000);
+    // setTimeout(() => {
+    //   this.currentImage =
+    //     "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1835849131,3531773843&fm=26&gp=0.jpg";
+    // }, 5000);
   },
   methods: {
     onAnnoContextMenu() {
@@ -115,10 +115,10 @@ export default {
       let mirror = this.$refs["aiPanel-editor"];
       mirror.getMarker().setTag({
         tagName: "小蜜蜂",
-        tag: "0x0001"
+        tag: "0x0001",
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

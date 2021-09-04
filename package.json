@@ -1,7 +1,7 @@
 {
   "name": "vue-picture-bd-marker",
   "description": "关于ui-picture-bd-marker插件的Vue封装",
-  "version": "1.4.3",
+  "version": "1.4.5",
   "author": "freddon <gsiner@live.com>",
   "license": "Apache-2.0 License",
   "private": false,
@@ -30,7 +30,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "eslint-plugin-vue": "^7.12.1",
-    "ui-picture-bd-marker": "^2.3.6",
+    "ui-picture-bd-marker": "^2.3.7",
     "vue": "^2.6.11"
   },
   "devDependencies": {
