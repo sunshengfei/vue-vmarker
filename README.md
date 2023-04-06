@@ -24,6 +24,33 @@ github仓库地址：[https://github.com/sunshengfei/vue-ui-picture-bd-marker](h
 更新说明
 ---
 
+## 1.5.0
+
+---
+增加config属性：
+```
+v-bind:config="{ closable: true }"
+```
+config接收的值和默认值如下，参见 ui-picture-bd-marker => [https://github.com/sunshengfei/ui-picture-bd-marker/blob/master/src/config.js](https://github.com/sunshengfei/ui-picture-bd-marker/blob/master/src/config.js)
+
+```
+        deviceType: 'both',//both | mouse | touch
+        blurOtherDots: false,
+        blurOtherDotsShowTags: false,
+        editable: true,
+        readOnlyCanSelected: true,
+        readOnlyAcceptEvent: ['mousedown', 'mouseup', 'touchstart', 'touchup'],
+        showTags: true,
+        closable: true, 
+        supportDelKey: false,
+        tagLocation: defaultPositions.bottom,
+        trashPositionStart: 0,
+        boundReachPercent: 0.01,
+        textComponent: () => undefined,
+        annotationClass: 'annotation',
+```
+
+
 ## 1.4.5
 ---
 1、支持长图模式，外部可以套div进行overflow，只需要在vue组件设置width和ratio组合值即可

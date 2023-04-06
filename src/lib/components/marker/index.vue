@@ -1,13 +1,6 @@
 <template>
-  <div
-    class="vmr-ai-panel"
-    :loading="loading"
-    :class="rootClass"
-  >
-    <div
-      class="vmr-g-image"
-      style="position: relative; overflow: hidden;"
-    >
+  <div class="vmr-ai-panel" :loading="loading" :class="rootClass">
+    <div class="vmr-g-image" style="position: relative; overflow: hidden;">
       <img
         class="vmr-ai-raw-image"
         :src="currentBaseImage"
@@ -21,8 +14,7 @@
         <div
           class="draft"
           style="position: absolute;user-select: none;display: none;background-color: rgba(1,0,0,0.5);"
-        >
-        </div>
+        ></div>
       </div>
     </div>
   </div>
@@ -34,23 +26,31 @@ const empImg = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8
 export default {
   name: "VueAiMarker",
   props: {
+    readOnlyCanSelected: {
+      type: Boolean,
+      default: true
+    },
     readOnly: Boolean,
     imgUrl: {
       type: String,
-      default: "",
+      default: ""
     },
     uniqueKey: {
       type: [String, Number],
-      default: "",
+      default: ""
     },
     width: {
       type: [String, Number],
-      default: () => "",
+      default: () => ""
+    },
+    config: {
+      type: Object,
+      default: () => ({})
     },
     ratio: {
       default: 16 / 9,
-      type: Number,
-    },
+      type: Number
+    }
   },
   data() {
     return {
@@ -60,7 +60,7 @@ export default {
       rootClass: "",
       key: "",
       wratioh: this.ratio,
-      loading: true,
+      loading: true
     };
   },
   beforeMount() {
@@ -77,7 +77,9 @@ export default {
         blurOtherDots: true,
         blurOtherDotsShowTags: true,
         editable: !this.readOnly,
+        readOnlyCanSelected: this.readOnlyCanSelected,
         trashPositionStart: 1,
+        ...this.config
       },
       onAnnoContextMenu: function(annoData, element, annoContext) {
         // console.log("🦁onAnnoContextMenu🦁 data=", annoData);
@@ -106,7 +108,7 @@ export default {
       },
       onUpdated: function(data) {
         self.$emit("vmarker:onUpdated", data, self.key);
-      },
+      }
     };
     if (/^.+$/.test(this.imgUrl)) {
       this.currentBaseImage = this.imgUrl;
@@ -146,7 +148,7 @@ export default {
         .querySelectorAll(
           ".vmr-g-image,.vmr-ai-raw-image,.vmr-ai-raw-image-mask"
         )
-        .forEach((element) => {
+        .forEach(element => {
           // element.style.width = root.style.width;
           // element.style.height =
           //   parseInt(root.clientWidth) / this.wratioh + "px";
@@ -177,7 +179,7 @@ export default {
         rawW: e.target.naturalWidth,
         rawH: e.target.naturalHeight,
         currentW: e.target.offsetWidth,
-        currentH: e.target.offsetHeight,
+        currentH: e.target.offsetHeight
       };
       let root = this.$el;
       if (this.width == "auto") {
@@ -187,7 +189,7 @@ export default {
           .querySelectorAll(
             ".vmr-g-image,.vmr-ai-raw-image,.vmr-ai-raw-image-mask"
           )
-          .forEach((element) => {
+          .forEach(element => {
             element.style.height = root.style.height;
             element.style.overflow = "auto";
           });
@@ -197,7 +199,7 @@ export default {
           .querySelectorAll(
             ".vmr-g-image,.vmr-ai-raw-image,.vmr-ai-raw-image-mask"
           )
-          .forEach((element) => {
+          .forEach(element => {
             if (this.wratioh == 0) {
               element.style.height = root.style.height;
             }
@@ -231,7 +233,7 @@ export default {
     },
     renderer(imageUrl) {
       this.currentBaseImage = imageUrl;
-    },
+    }
   },
   watch: {
     imgUrl: function(n, o) {
@@ -243,7 +245,7 @@ export default {
     readOnly: function(n, o) {
       this.options.options = {
         ...this.options.options,
-        editable: !n,
+        editable: !n
       };
       if (this.marker) {
         this.marker.updateConfig(this.options);
@@ -254,12 +256,12 @@ export default {
         this.wratioh = n;
         this.__updateFrame();
       }
-    },
+    }
   },
   activated() {
     this.rootClass = `pannel-${this.key}`;
     this.$emit("vmarker:onReady", this.key);
-  },
+  }
 };
 </script>
 <style lang="scss" scoped>

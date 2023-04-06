@@ -15,7 +15,9 @@
       @vmarker:onSize="onSize"
       v-bind:readOnly="readOnly"
       v-bind:imgUrl="currentImage"
+      v-bind:config="{ closable: true }"
     ></AiPanel>
+    <button @click="readOnly = !readOnly">只读/可编辑</button>
     <div>"data:"{{ tagList }}</div>
   </div>
 </template>
@@ -37,13 +39,13 @@ export default {
       photoWH: {
         sourceWH: {
           souW: 0,
-          souH: 0,
+          souH: 0
         },
         newWH: {
           newW: 0,
-          newH: 0,
-        },
-      },
+          newH: 0
+        }
+      }
     };
   },
   mounted() {
@@ -115,10 +117,10 @@ export default {
       let mirror = this.$refs["aiPanel-editor"];
       mirror.getMarker().setTag({
         tagName: "小蜜蜂",
-        tag: "0x0001",
+        tag: "0x0001"
       });
-    },
-  },
+    }
+  }
 };
 </script>
 
