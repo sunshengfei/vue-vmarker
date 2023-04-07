@@ -242,6 +242,15 @@ export default {
     width: function(n, o) {
       this.__updateFrame();
     },
+    config:function(n, o) {
+      if (this.marker) {
+        this.marker.updateConfig({
+          options:{
+            ...(n||{})
+          }
+        });
+      }
+    },
     readOnly: function(n, o) {
       this.options.options = {
         ...this.options.options,

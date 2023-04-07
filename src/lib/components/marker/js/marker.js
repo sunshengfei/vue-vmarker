@@ -3,7 +3,7 @@
 import {
   BdAIMarker,
   positionP2S
-} from 'ui-picture-bd-marker'
+} from './bdmarker'
 
 export default class PictureMarker {
   constructor(parentEl, draftEl, configs) {

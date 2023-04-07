@@ -8350,10 +8350,10 @@ uglify-js@3.4.x:
     commander "~2.19.0"
     source-map "~0.6.1"
 
-ui-picture-bd-marker@^2.3.7:
-  version "2.3.7"
-  resolved "https://registry.npmjs.org/ui-picture-bd-marker/-/ui-picture-bd-marker-2.3.7.tgz#4fa127ed6229c1875af49b39b641ff59ede20e6c"
-  integrity sha512-aNN/7eKZcDTWtyw2k1Y0ea75joDgkizVA+ll8CuAGHi3eDL2tfVgOsckxj/ujUiHS3Hb2WNCDNkhmO6D4eYEvA==
+ui-picture-bd-marker@^2.3.8:
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/ui-picture-bd-marker/-/ui-picture-bd-marker-2.3.8.tgz#cb60c35e0b470efb74b081f70d6d01d1c1dd81a9"
+  integrity sha512-j484h55W/4ngGCfZASoyq6Lne+mtaaoVqvq9kvWitT3phOPZNL+1fzmn2k0uwzCXXzCZvpQ33hmbY+e6xXyXgA==
 
 unbox-primitive@^1.0.1:
   version "1.0.1"

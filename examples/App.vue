@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" style="height:100px;overflow:auto">
     <AiPanel
       ref="aiPanel-editor"
       class="ai-observer"
@@ -13,9 +13,8 @@
       @vmarker:onReady="onAiPanelReady"
       @vmarker:onImageLoad="onImageLoad"
       @vmarker:onSize="onSize"
-      v-bind:readOnly="readOnly"
       v-bind:imgUrl="currentImage"
-      v-bind:config="{ closable: true }"
+      v-bind:config="{ closable: true,editable:!readOnly ,draggingNoTag:true}"
     ></AiPanel>
     <button @click="readOnly = !readOnly">只读/可编辑</button>
     <div>"data:"{{ tagList }}</div>

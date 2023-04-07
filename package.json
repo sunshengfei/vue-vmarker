@@ -1,7 +1,7 @@
 {
   "name": "vue-picture-bd-marker",
   "description": "关于ui-picture-bd-marker插件的Vue封装",
-  "version": "1.5.0",
+  "version": "1.5.1-alpha-1150",
   "author": "freddon <gsiner@live.com>",
   "license": "Apache-2.0 License",
   "private": false,
